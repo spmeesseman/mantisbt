@@ -412,11 +412,12 @@ function layout_navbar() {
 	echo '<span class="icon-bar"></span>';
 	echo '</button>';
 
-	echo '<div class="navbar-header">';
-	echo '<a href="' . $t_short_path . $t_logo_url . '" class="navbar-brand">';
-	echo '<span class="smaller-75"> ';
-	echo string_display_line( config_get('window_title') );
-	echo ' </span>';
+    echo '<div class="navbar-header">';
+	echo '<a href="' . $t_short_path . $t_logo_url . '">';
+	#echo '<span class="smaller-75"> ';
+	#echo '<i class="ace-icon fa fa-diamond"></i> '. string_display_line( config_get('window_title') );
+	echo '<img src="images/header2.png" height="32" style="margin:7px"></img>';
+	#echo ' </span>';
 	echo '</a>';
 
 	$t_toggle_class = (OFF == config_get('show_avatar') ? 'navbar-toggle' : 'navbar-toggle-img');
@@ -744,13 +745,15 @@ function layout_print_sidebar( $p_active_sidebar_page = null ) {
 		}
 
 		# Project Documentation Page
-		if( ON == config_get( 'enable_project_documentation' ) ) {
-			layout_sidebar_menu( 'proj_doc_page.php', 'docs_link', 'fa-book', $p_active_sidebar_page );
+		if( access_has_project_level( UPDATER, $t_current_project ) ) {
+			if( ON == config_get( 'enable_project_documentation' ) ) {
+				layout_sidebar_menu( 'proj_doc_page.php', 'docs_link', 'fa-book', $p_active_sidebar_page );
+			}
 		}
 
 		# Project Wiki
 		if( ON == config_get_global( 'wiki_enable' )  ) {
-			layout_sidebar_menu( 'wiki.php?type=project&amp;id=' . $t_current_project, 'wiki', 'fa-book', $p_active_sidebar_page );
+			layout_sidebar_menu( 'plugin.php?page=IFramed/main&url=wiki.php%3Ftype=project%26id=' . $t_current_project, 'wiki', 'fa-book', $p_active_sidebar_page );
 		}
 
 		# Manage Users (admins) or Manage Project (managers) or Manage Custom Fields

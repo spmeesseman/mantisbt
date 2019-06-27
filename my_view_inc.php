@@ -70,6 +70,23 @@ $t_bug_resolved_status_threshold = config_get( 'bug_resolved_status_threshold' )
 $t_hide_status_default = config_get( 'hide_status_default' );
 $t_default_show_changed = config_get( 'default_show_changed' );
 
+#$c_filter['gems2_user'] = array(
+#	'custom_fields' => Array($gems2_user_field_id => Array('0' => $gems2_user_text),
+#				 $unit_tester_field_id => Array( '0' => $username)),
+#	'show_category'		=> Array ( '0' => META_FILTER_ANY ),
+#	'show_severity'		=> Array ( '0' => META_FILTER_ANY ),
+#	'show_status'		=> Array ( '0' => META_FILTER_ANY ),
+#	'highlight_changed'	=> $t_default_show_changed,
+#	'reporter_id'		=> Array ( '0' => META_FILTER_ANY ),
+#	'handler_id'		=> Array ( '0' => META_FILTER_ANY ),
+#	'show_resolution'	=> Array ( '0' => META_FILTER_ANY ),
+#	'show_build'		=> Array ( '0' => META_FILTER_ANY ),
+#	'show_version'		=> Array ( '0' => META_FILTER_ANY ),
+#	'hide_status'		=> Array ( '0' => $t_hide_status_default ),
+#	'user_monitor'		=> Array ( '0' => META_FILTER_ANY ),
+#);
+#$url_link_parameters['ready_test'] = 'custom_field_'.$unit_tester_field_id.'=' . $username. '&custom_field_'.$unit_test_status_field_id.'='.$ready_testing_text;
+
 $c_filter['assigned'] = filter_create_assigned_to_unresolved( helper_get_current_project(), $t_current_user_id );
 $t_url_link_parameters['assigned'] = FILTER_PROPERTY_HANDLER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_bug_resolved_status_threshold;
 

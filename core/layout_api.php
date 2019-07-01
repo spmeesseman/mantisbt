@@ -276,7 +276,8 @@ function layout_head_css() {
 	# page specific plugin styles
 
 	# theme styles
-	html_css_link( 'ace.min.css' );
+	html_css_link( 'ace.css' );
+	#html_css_link( 'ace.min.css' );
 	html_css_link( 'ace-mantis.css' );
 	html_css_link( 'ace-skins.min.css' );
 
@@ -333,7 +334,8 @@ function layout_body_javascript() {
 	}
 
 	# ace theme scripts
-	html_javascript_link( 'ace.min.js' );
+	html_javascript_link( 'ace.js' );
+	#html_javascript_link( 'ace.min.js' );
 }
 
 
@@ -412,11 +414,12 @@ function layout_navbar() {
 	echo '<span class="icon-bar"></span>';
 	echo '</button>';
 
-	echo '<div class="navbar-header">';
-	echo '<a href="' . $t_short_path . $t_logo_url . '" class="navbar-brand">';
-	echo '<span class="smaller-75"> ';
-	echo string_display_line( config_get('window_title') );
-	echo ' </span>';
+    echo '<div class="navbar-header">';
+	echo '<a href="' . $t_short_path . $t_logo_url . '">';
+	#echo '<span class="smaller-75"> ';
+	#echo '<i class="ace-icon fa fa-diamond"></i> '. string_display_line( config_get('window_title') );
+	echo '<img src="images/header2.png" height="32" style="margin:7px"></img>';
+	#echo ' </span>';
 	echo '</a>';
 
 	$t_toggle_class = (OFF == config_get('show_avatar') ? 'navbar-toggle' : 'navbar-toggle-img');
@@ -744,21 +747,17 @@ function layout_print_sidebar( $p_active_sidebar_page = null ) {
 		}
 
 		# Project Documentation Page
-		if( ON == config_get( 'enable_project_documentation' ) ) {
-			layout_sidebar_menu( 'proj_doc_page.php', 'docs_link', 'fa-book', $p_active_sidebar_page );
+		if( access_has_project_level( UPDATER, $t_current_project ) ) {
+			if( ON == config_get( 'enable_project_documentation' ) ) {
+				layout_sidebar_menu( 'proj_doc_page.php', 'docs_link', 'fa-book', $p_active_sidebar_page );
+			}
 		}
 
 		# Project Wiki
 		if( ON == config_get_global( 'wiki_enable' )  ) {
+			//layout_sidebar_menu( 'plugin.php?page=IFramed/main&url=wiki.php%3Ftype=project%26id=' . $t_current_project, 'wiki', 'fa-book', $p_active_sidebar_page );
 			layout_sidebar_menu( 'wiki.php?type=project&amp;id=' . $t_current_project, 'wiki', 'fa-book', $p_active_sidebar_page );
 		}
-
-		# Manage Users (admins) or Manage Project (managers) or Manage Custom Fields
-		$t_link = layout_manage_menu_link();
-		if( !is_blank( $t_link ) ) {
-			layout_sidebar_menu( $t_link , 'manage_link', 'fa-gears', $p_active_sidebar_page );
-		}
-
 		# Time Tracking / Billing
 		if( config_get( 'time_tracking_enabled' ) && access_has_project_level( config_get( 'time_tracking_reporting_threshold', $t_current_project ) ) ) {
 			layout_sidebar_menu( 'billing_page.php', 'time_tracking_billing_link', 'fa-clock-o', $p_active_sidebar_page );
@@ -771,6 +770,12 @@ function layout_print_sidebar( $p_active_sidebar_page = null ) {
 		# Config based custom options
 		layout_config_menu_options_for_sidebar( $p_active_sidebar_page );
 
+		# Manage Users (admins) or Manage Project (managers) or Manage Custom Fields
+		$t_link = layout_manage_menu_link();
+		if( !is_blank( $t_link ) ) {
+			layout_sidebar_menu( $t_link , 'manage_link', 'fa-gears', $p_active_sidebar_page );
+		}
+		
 		# Ending sidebar markup
 		layout_sidebar_end();
 	}
@@ -871,9 +876,13 @@ function layout_sidebar_begin() {
  * @param string $p_active_sidebar_page page name to set as active
  * @return void
  */
-function layout_sidebar_menu( $p_page, $p_title, $p_icon, $p_active_sidebar_page = null ) {
+function layout_sidebar_menu( $p_page, $p_title, $p_icon, $p_active_sidebar_page = null ) 
+{
 	if( $p_page == $p_active_sidebar_page ||
-		$p_page == basename( $_SERVER['SCRIPT_NAME'] ) ) {
+		$p_page == basename( $_SERVER['SCRIPT_NAME'] ) ||
+		stripos(str_replace("%20", " ", $_SERVER['QUERY_STRING']), "title=".$p_title) != FALSE ||
+		(strpos($_SERVER['QUERY_STRING'], 'Source/index') != FALSE && ( $p_title == 'Repositories' || $p_title == 'Search' ) ) ||
+		(strpos($_SERVER['QUERY_STRING'], 'Taskodrome/main') != FALSE && $p_title == 'Scrum Board' ) ) {
 		echo '<li class="active">' . "\n";
 	} else {
 		echo '<li>' . "\n";

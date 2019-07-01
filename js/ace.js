@@ -299,7 +299,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
                     if(updateView) setTimeout(function() {
                         $('head').find('link.ace-ajax-stylesheet').remove();
 
-                        var main_selectors = ['link.ace-main-stylesheet', 'link#main-ace-style', 'link[href*="/ace.min.css"]', 'link[href*="/ace.css"]']
+                        var main_selectors = ['link.ace-main-stylesheet', 'link#main-ace-style', 'link[href*="/ace.css"]', 'link[href*="/ace.css"]']
                         var ace_style = [];
                         for(var m = 0; m < main_selectors.length; m++) {
                             ace_style = $('head').find(main_selectors[m]).first();

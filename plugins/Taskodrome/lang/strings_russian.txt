@@ -1,0 +1,33 @@
+<?php
+
+# Copyright (c) 2015 Maxim Kuzmin
+# Licensed under the Apache license
+
+$s_plugin_Taskodrome_ = '';
+$s_plugin_Taskodrome_title = 'Scrum Board';
+$s_plugin_Taskodrome_description = 'Плагин для управления задачами';
+
+$s_plugin_Taskodrome_board = 'Scrum Board';
+
+$s_plugin_Taskodrome_assignment_board = 'Доска исполнителей';
+$s_plugin_Taskodrome_status_board = 'Доска статусов';
+$s_plugin_Taskodrome_relationship_board = 'Доска связей';
+
+$s_plugin_Taskodrome_config = 'Настройка';
+$s_plugin_Taskodrome_config_title = 'Настройка плагина Taskodrome';
+
+$s_plugin_Taskodrome_default_value = 'По умолчанию:<br>%s<br>';
+
+$s_plugin_Taskodrome_status_board_order_label = 'Порядок статусов';
+
+$s_plugin_Taskodrome_cooldown_period_label = 'Период "остывания" задачи';
+$s_plugin_Taskodrome_cooldown_period_hint = 'Период "остывания" равен сумме этих величин (т.е., "1 день; 7 часов" дают период, равный 31 часу)';
+$s_plugin_Taskodrome_cooldown_period_days = 'Дни';
+$s_plugin_Taskodrome_cooldown_period_hours = 'Часы';
+
+$s_plugin_Taskodrome_hidden_users_label = 'Скрытые пользователи';
+$s_plugin_Taskodrome_hidden_users_hint = 'Список, через точку с запятой';
+
+$s_plugin_Taskodrome_empty_version_label = 'Показать пустые версии';
+
+$s_plugin_Taskodrome_no_relations_message = 'Нет связей между задачами';

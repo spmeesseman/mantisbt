@@ -13,7 +13,7 @@ docbook/*/tmp
 build/
 
 # Untracked plugins
-plugins/*
+#plugins/*
 !plugins/MantisCoreFormatting
 !plugins/MantisGraph
 !plugins/XmlImportExport

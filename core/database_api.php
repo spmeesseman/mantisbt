@@ -1221,7 +1221,7 @@ function db_format_query_log_msg( $p_query, array $p_arr_parms ) {
 			# which causes issues with UTF-8 characters in the query string
 			# (e.g. from custom fields names)
 			$t_utf8_offset = mb_strlen( substr( $p_query, 0, $t_match_param[1] ), mb_internal_encoding() );
-			if( $i <= count( $p_arr_parms ) ) {
+			if( $i < count( $p_arr_parms ) ) {
 				switch( $g_db_functional_type ) {
 					case DB_TYPE_PGSQL:
 						# For pgsql, the bound value is indexed by the parameter name (1-based)

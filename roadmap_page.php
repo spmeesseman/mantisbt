@@ -118,8 +118,7 @@ function print_version_header( array $p_version_row ) {
 		 '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . META_FILTER_NONE . '">';
 	echo lang_get( 'view_bugs_link' );echo '</a>';
 	echo '<a class="btn btn-xs btn-primary btn-white btn-round" href="roadmap_page.php?version_id=' . $t_version_id . '">' . string_display_line( $t_version_name ) . '</a>';
-	echo '<a class="btn btn-xs btn-primary btn-white btn-round" href="roadmap_page.php?project_id=' . $t_project_id . '">' . string_display_line( $t_project_name ) . '</a>';
-
+	
 	if (plugin_is_installed("GanttChart"))
 	{
 		if (plugin_is_installed("IFramed"))
@@ -131,6 +130,8 @@ function print_version_header( array $p_version_row ) {
 		}
 	}
 	
+	echo '<a class="btn btn-xs btn-primary btn-white btn-round" href="roadmap_page.php?project_id=' . $t_project_id . '">' . string_display_line( $t_project_name ) . '</a>';
+
 	echo '</div>';
 
 	echo '</div>';

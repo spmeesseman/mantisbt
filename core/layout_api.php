@@ -754,7 +754,7 @@ function layout_print_sidebar( $p_active_sidebar_page = null ) {
 		}
 
 		# Project Wiki
-		if( ON == config_get_global( 'wiki_enable' )  ) {
+		if( ON == config_get_global( 'wiki_enable' ) && access_has_project_level( REPORTER, $t_current_project )  ) {
 			//layout_sidebar_menu( 'plugin.php?page=IFramed/main&url=wiki.php%3Ftype=project%26id=' . $t_current_project, 'wiki', 'fa-book', $p_active_sidebar_page );
 			layout_sidebar_menu( 'wiki.php?type=project&amp;id=' . $t_current_project, 'wiki', 'fa-book', $p_active_sidebar_page );
 		}

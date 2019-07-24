@@ -23,11 +23,6 @@
 	plugin_require_api( 'core/config_api.php' );
 	plugin_require_api( 'core/Mail/Parser.php' );
 
-	plugin_require_api( 'core/EmailReplyParser/Parser/EmailParser.php');
-	plugin_require_api( 'core/EmailReplyParser/Parser/FragmentDTO.php');
-	plugin_require_api( 'core/EmailReplyParser/Email.php');
-	plugin_require_api( 'core/EmailReplyParser/Fragment.php');
-
 class ERP_mailbox_api
 {
 	private $_functionality_enabled = FALSE;
@@ -74,11 +69,14 @@ class ERP_mailbox_api
 	private $_mail_preferred_realname;
 	private $_mail_remove_mantis_email;
 	private $_mail_remove_replies;
+	private $_mail_remove_replies_after;
 	private $_mail_removed_reply_text;
 	private $_mail_reporter_id;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
+	private $_mail_strip_gmail_style_replies;
 	private $_mail_strip_signature;
+	private $_mail_strip_signature_delim;
 	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
 	private $_mail_use_message_id;
@@ -125,11 +123,14 @@ class ERP_mailbox_api
 		$this->_mail_preferred_realname			= plugin_config_get( 'mail_preferred_realname' );
 		$this->_mail_remove_mantis_email		= plugin_config_get( 'mail_remove_mantis_email' );
 		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
+		$this->_mail_remove_replies_after		= plugin_config_get( 'mail_remove_replies_after' );
 		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
 		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
+		$this->_mail_strip_gmail_style_replies	= plugin_config_get( 'mail_strip_gmail_style_replies' );
 		$this->_mail_strip_signature			= plugin_config_get( 'mail_strip_signature' );
+		$this->_mail_strip_signature_delim		= plugin_config_get( 'mail_strip_signature_delim' );
 		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_message_id				= plugin_config_get( 'mail_use_message_id' );
@@ -140,11 +141,11 @@ class ERP_mailbox_api
 		$this->_mp_options[ 'show_mem_usage' ]	= $this->_mail_debug_show_memory_usage;
 		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
 
-		$this->_mp_options[ 'process_markdown' ]	= OFF;
+		$this->_mp_options[ 'parse2markdown' ]	= OFF;
 		if ( plugin_is_loaded( 'MantisCoreFormatting' ) )
 		{
 			plugin_push_current( 'MantisCoreFormatting' );
-			$this->_mp_options[ 'process_markdown' ] = plugin_config_get( 'process_markdown' );
+			$this->_mp_options[ 'parse2markdown' ] = plugin_config_get( 'process_markdown' );
 			plugin_pop_current();
 		}
 
@@ -328,7 +329,6 @@ class ERP_mailbox_api
 	private function process_pop3_mailbox()
 	{
 		$this->_mailserver = new Net_POP3();
-		$this->_mailserver->_timeout = 3;
 
 		$t_connectresult = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->get_StreamContextOptions() );
 
@@ -380,7 +380,6 @@ class ERP_mailbox_api
 	{
 //		$this->_mailserver = new Net_IMAP( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
 		$this->_mailserver = new Net_IMAP();
-		$this->_mailserver->setTimeout( 3 );
 
 		$this->_mailserver->setStreamContextOptions( $this->get_StreamContextOptions() );
 
@@ -443,17 +442,13 @@ class ERP_mailbox_api
 
 											if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 											{
-												$t_flags = $this->_mailserver->getFlags();
-
 												while ( $t_Msg = array_pop( $t_ListMsgs ) )
 												{
-													$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ], $t_flags );
+													$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ] );
 
 													if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
 													{
-														// Should we stop processing if the flag cannot be verified or process the email?
-														// Let's ignore the email and hope the check works on the next run
-														$t_isDeleted = TRUE;
+														$t_isDeleted = FALSE;
 													}
 
 													if ( $t_isDeleted === TRUE )
@@ -536,20 +531,35 @@ class ERP_mailbox_api
 	# Needed a workaround to sort IMAP emails in a certain order
 	private function getListing()
 	{
-		$t_ListMsgs = $this->_mailserver->getListing();
+		$t_ListMsgs = NULL;
 
-		if ( !PEAR::isError( $t_ListMsgs ) )
+		if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
 		{
-			if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
-			{
-				$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'uidl' );
-			}
-			else
-			{
-				$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'msg_id' );
-			}
+			$t_getSummary = $this->_mailserver->getSummary();
 
-			krsort( $t_ListMsgs );
+			if ( !$this->pear_error( 'IMAP Get folder info', $t_getSummary ) )
+			{
+				$t_nummsg = count( $t_getSummary );
+				$t_ListMsgs = array();
+				for ( $i = 0; $i < $t_nummsg; $i++ )
+				{
+					$t_getSummary[ $i ][ 'DATE' ] = strtotime( $t_getSummary[ $i ][ 'DATE' ] );
+					// If strtotime fails we default back to the current time. 
+					if ( $t_getSummary[ $i ][ 'DATE' ] === FALSE )
+					{
+						$t_getSummary[ $i ][ 'DATE' ] = time();
+					}
+
+					$t_ListMsgs[ $t_getSummary[ $i ][ 'DATE' ] ] = array( 'msg_id' => (int) $t_getSummary[ $i ][ 'MSG_NUM' ] );
+				}
+
+				krsort( $t_ListMsgs );
+			}
+		}
+
+		if ( $t_ListMsgs === NULL )
+		{
+			$t_ListMsgs = $this->_mailserver->getListing();
 		}
 
 		return( $t_ListMsgs );
@@ -634,28 +644,28 @@ class ERP_mailbox_api
 	# Check whether a email is deleted
 	# for IMAP only function
 	# Handles a workaround for problems with Net_IMAP 1.1.x with the hasFlag function (isDeleted uses that function)
-	private function isDeleted( $p_msg_id, &$p_flags )
+	private function isDeleted( $message_nro )
 	{
 //		return $this->hasFlag($message_nro, '\Deleted');
 		$flag = '\Deleted';
 
-		if ( $p_flags instanceOf PEAR_Error )
+		if ( ( $resp = $this->_mailserver->getFlags( $message_nro ) ) instanceOf PEAR_Error )
 		{
-			return $p_flags;
+			return $resp;
 		}
 
-		if ( isset( $p_flags[ $p_msg_id ] ) )
+		if ( isset( $resp[ 0 ] ) )
 		{
-			if ( is_array( $p_flags[ $p_msg_id ] ) )
+			if ( is_array( $resp[ 0 ] ) )
 			{
-				if ( in_array( $flag, $p_flags[ $p_msg_id ] ) )
+				if ( in_array( $flag, $resp[ 0 ] ) )
 				{
-					return TRUE;
+					return true;
 				}
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	# --------------------
@@ -860,8 +870,8 @@ class ERP_mailbox_api
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
-			$t_description = $this->identify_mantisbt_replies( $t_description );
-			$t_description = $this->parse_email_body( $t_description );
+			$t_description = $this->identify_replies( $t_description );
+			$t_description = $this->strip_signature( $t_description );
 			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
 			$t_description = $this->limit_body_size( 'note', $t_description, $p_email );
 
@@ -874,13 +884,8 @@ class ERP_mailbox_api
 
 			if ( bug_is_resolved( $t_bug_id ) )
 			{
-				$t_existing_bug = bug_get( $t_bug_id, true );
-
 				# Reopen issue and add a bug note
 				bug_reopen( $t_bug_id, $t_description );
-
-				$t_updated_bug = bug_get( $t_bug_id, true );
-				event_signal( 'EVENT_UPDATE_BUG', array( $t_existing_bug, $t_updated_bug ) );
 			}
 			elseif ( !is_blank( $t_description ) )
 			{
@@ -959,6 +964,7 @@ class ERP_mailbox_api
 			$t_bug_data->summary				= mb_substr( $p_email[ 'Subject' ], 0, $this->_mail_max_email_summary );
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
+			$t_description = $this->strip_signature( $t_description );
 			$t_description = $this->add_additional_info( 'issue', $p_email, $t_description );
 			$t_description = $this->limit_body_size( 'description', $t_description, $p_email );
 			$t_bug_data->description			= $t_description;
@@ -1523,23 +1529,15 @@ class ERP_mailbox_api
 			{
 				if ( !is_blank( $t_ref ) )
 				{
-					// ignore references longer then 255 characters as they are most likely malformed
-					if ( strlen( $t_ref ) > 255 )
-					{
-						custom_error( 'Reference id encountered thats longer then 255 characters. It will be ignored' );
-					}
-					else
-					{
-						// Check whether the msg_id is already in the database table (incase its under a different bug id)
-						$t_bug_id = $this->get_bug_id_from_references( $t_ref );
+					// Check whether the msg_id is already in the database table
+					$t_bug_id = $this->get_bug_id_from_references( $t_ref );
 
-						if( $t_bug_id === FALSE )
-						{
-							// Add the Message-ID to the table for future reference
-							$t_query = 'INSERT INTO ' . plugin_table( 'msgids' ) . '( issue_id, msg_id ) VALUES'
-									. ' (' . db_param() . ', ' . db_param() . ')';
-							db_query_bound( $t_query, array( (int)$p_bug_id, $t_ref ) );
-						}
+					if( $t_bug_id === FALSE )
+					{
+						// Add the Message-ID to the table for future reference
+						$t_query = 'INSERT INTO ' . plugin_table( 'msgids' ) . '( issue_id, msg_id ) VALUES'
+								. ' (' . db_param() . ', ' . db_param() . ')';
+						db_query_bound( $t_query, array( (int)$p_bug_id, $t_ref ) );
 					}
 				}
 			}
@@ -1585,10 +1583,25 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# Removes MantisBT email parts from replies
-	private function identify_mantisbt_replies( $p_description )
+	# Removes replies from mails
+	private function identify_replies( $p_description )
 	{
 		$t_description = $p_description;
+
+		if ( $this->_mail_remove_replies )
+		{
+			$t_first_occurence = mb_stripos( $t_description, $this->_mail_remove_replies_after );
+			if ( $t_first_occurence !== FALSE )
+			{
+				$t_description = mb_substr( $t_description, 0, $t_first_occurence );
+			}
+
+			//remove gmail style replies
+			if( $this->_mail_strip_gmail_style_replies )
+			{
+				$t_description = preg_replace( '/^\s*>?\s*On\b.*\bwrote:.*?/msU', "\n", $t_description );
+			}
+		}
 
 		if ( $this->_mail_remove_mantis_email )
 		{
@@ -1629,36 +1642,6 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# Process the body of an email to separate signatures and replies
-	private function parse_email_body( $p_description )
-	{
-		$t_description = $p_description;
-
-		if ( $this->_mail_remove_replies || $this->_mail_strip_signature )
-		{
-			// Lines starting with -- are seen as signatures. EmailReplyParser doesn't use "-----Original Message-----" anyway
-			$t_description = preg_replace('/(?:\\\\{1}---){1,2}-{0,2}\h?[ \S]+\h?(?:\\\\{1}---){1,2}-{0,2}/', '', $t_description );
-
-			$EmailBodyParser = new EmailReplyParser\Parser\EmailParser;
-			$bodyParsed = $EmailBodyParser->parse( $t_description );
-			$bodyfragments = $bodyParsed->getFragments();
-
-			$selectedFragments = array_filter( $bodyfragments, array( $this, 'selectFragments' ) );
-
-			$t_description = rtrim( implode( "\n", $selectedFragments ) );
-		}
-
-		return( $t_description );
-	}
-
-	# --------------------
-	# Select the fragments of interest to us
-	private function selectFragments( EmailReplyParser\Fragment $fragment )
-	{
-		return( !( $fragment->isEmpty() ) && !( $this->_mail_remove_replies && $fragment->isQuoted() ) && !( $this->_mail_strip_signature && $fragment->isSignature() ) );
-	}
-
-	# --------------------
 	# Add additional info if enabled
 	private function add_additional_info( $p_type, &$p_email, $p_description )
 	{
@@ -1683,11 +1666,33 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
+	# Strip signature from the mail body. Only removes the last part set by the delimiter
+	private function strip_signature( $p_description )
+	{
+		$t_description = $p_description;
+
+		if ( $this->_mail_strip_signature && strlen( trim( $this->_mail_strip_signature_delim ) ) > 1 )
+		{
+			$t_parts = preg_split( '/((?:\r|\n|\r\n)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n|\r\n))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
+
+			if ( count( $t_parts ) > 2 ) // String should not start with the delimiter so that why we need at least 3 parts
+			{
+				array_pop( $t_parts );
+				array_pop( $t_parts );
+				$t_description = implode( '', $t_parts );
+			}
+		}
+
+		return( $t_description );
+	}
+
+	# --------------------
 	# Limit email body size
 	private function limit_body_size( $p_type, $p_description, &$p_email )
 	{
 		$t_description = $p_description;
 
+		// Checking binary length since MySQL TEXT column is also binary sized
 		if ( mb_strlen( $t_description ) > $this->_mail_max_email_body )
 		{
 			$t_mail_max_email_body_text = "\n" . $this->_mail_max_email_body_text;

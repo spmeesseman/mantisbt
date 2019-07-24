@@ -2793,32 +2793,27 @@ class Net_IMAPProtocol
             break;
 
         default:
-            // ERP-modification: BEGIN IMAP Performance optimizations
-            $startsWithBody = $str[0] == 'B'
-              && ($this->_getSubstr($str, 0, 5) == 'BODY['
-                  || $this->_getSubstr($str, 0, 5) == 'BODY.');
             for ($pos = 0; $pos < $len; $pos++) {
-                $c = $str[$pos];
-                if ($startsWithBody) {
-                    if ($c == ']') {
+                if ($this->_getSubstr($str, 0, 5) == 'BODY[' 
+                    || $this->_getSubstr($str, 0, 5) == 'BODY.') {
+                    if ($str[$pos] == ']') {
                         $pos++;
                         break;
                     }
-                } elseif ($c == ' '
-                          || $c == "\r"
-                          || $c == ')'
-                          || $c == '('
-                          || $c == "\n" ) {
+                } elseif ($str[$pos] == ' ' 
+                          || $str[$pos] == "\r" 
+                          || $str[$pos] == ')' 
+                          || $str[$pos] == '(' 
+                          || $str[$pos] == "\n" ) {
                     break;
                 }
-                if ($str[$pos] == '\\' && $str[$pos + 1 ] == ' ') {
+                if ($str[$pos] == "\\" && $str[$pos + 1 ] == ' ') {
                     $pos++;
                 }
-                if ($str[$pos] == '\\' && $str[$pos + 1 ] == '\\') {
+                if ($str[$pos] == "\\" && $str[$pos + 1 ] == "\\") {
                     $pos++;
                 }
             }
-            // ERP-modification: END IMAP Performance optimizations
             //Advance the string
             if ($pos == 0) {
                 $content_size = 1;

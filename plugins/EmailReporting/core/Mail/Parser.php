@@ -2,17 +2,15 @@
 
 //require_once( 'Mail/mimeDecode.php' );
 plugin_require_api( 'core_pear/Mail/mimeDecode.php' );
-
-plugin_require_api( 'core/Mail/simple_html_dom.php' );
-
-plugin_require_api( 'core/Mail/Markdownify/Converter.php' );
-plugin_require_api( 'core/Mail/Markdownify/ConverterExtra.php' );
-plugin_require_api( 'core/Mail/Markdownify/Parser.php' );
+plugin_require_api( 'core/Mail/simple_html_dom.php');
+plugin_require_api( 'core/Mail/Markdownify/Converter.php');
+plugin_require_api( 'core/Mail/Markdownify/ConverterExtra.php');
+plugin_require_api( 'core/Mail/Markdownify/Parser.php');
 
 class ERP_Mail_Parser
 {
 	private $_parse_html = FALSE;
-	private $_process_markdown = FALSE;
+	private $_parse2markdown = FALSE;
 	private $_encoding = 'UTF-8';
 	private $_add_attachments = TRUE;
 	private $_debug = FALSE;
@@ -29,7 +27,7 @@ class ERP_Mail_Parser
 	private $_subject;
 	private $_def_charset = 'auto';
 	private $_fallback_charset = 'ASCII';
-	private $_priority = NULL;
+	private $_priority;
 	private $_messageid;
 	private $_references = array();
 	private $_inreplyto;
@@ -57,14 +55,15 @@ class ERP_Mail_Parser
 			'ks_c_5601-1987' => 'UHC',
 			'ks_c_5601-1989' => 'UHC',
 			'us-ascii' => 'ASCII',
-			'big5' => 'BIG-5',
-			'windows-1257' => 'ISO-8859-13', // not perfect but should do the job
 	);
 
 	public function __construct( $options, $mailbox_starttime = NULL )
 	{
 		$this->_parse_html = $options[ 'parse_html' ];
-		$this->_process_markdown = $options[ 'process_markdown' ];
+		if ( $this->_parse_html )
+		{
+			$this->_parse2markdown = $options[ 'parse2markdown' ];
+		}
 		$this->_add_attachments = $options[ 'add_attachments' ];
 		$this->_debug = $options[ 'debug' ];
 		$this->_show_mem_usage = $options[ 'show_mem_usage' ];
@@ -141,15 +140,13 @@ class ERP_Mail_Parser
 
 				if ( $t_encode !== FALSE )
 				{
-					$encode = $t_encode;
+					return( $t_encode );
 				}
 			}
 
-			// Replace non-breakable space with normal space
-			$encode = str_replace( "\xC2\xA0" , ' ', $encode );
 			// Remove any invisible unicode control format characters
 			// https://www.fileformat.info/info/unicode/category/Cf/index.htm
-			$encode = preg_replace( '/\p{Cf}+/u', '', $encode );
+			$encode = preg_replace( '/\p{Cf}+/u', "", $encode );
 		}
 
 		return( $encode );
@@ -316,27 +313,12 @@ class ERP_Mail_Parser
 
 	private function parseStructure( &$structure )
 	{
-		if ( isset( $structure->headers[ 'from' ] ) )
-		{
-			$this->setFrom( $structure->headers[ 'from' ] );
-		}
-
-		if ( isset( $structure->headers[ 'subject' ] ) )
-		{
-			$this->setSubject( $structure->headers[ 'subject' ] );
-		}
+		$this->setFrom( $structure->headers[ 'from' ] );
+		$this->setSubject( $structure->headers[ 'subject' ] );
 
 		if ( isset( $structure->headers[ 'x-priority' ] ) )
 		{
 			$this->setPriority( $structure->headers[ 'x-priority' ] );
-		}
-		elseif ( isset( $structure->headers[ 'x-msmail-priority' ] ) )
-		{
-			$this->setPriority( $structure->headers[ 'x-msmail-priority' ] );
-		}
-		elseif ( isset( $structure->headers[ 'importance' ] ) )
-		{
-			$this->setPriority( $structure->headers[ 'importance' ] );
 		}
 
 		if ( isset( $structure->headers[ 'message-id' ] ) )
@@ -408,10 +390,13 @@ class ERP_Mail_Parser
 
 	private function setReferences( $p_references )
 	{
-		// Some email clients or servers malform the references mime header. They mix comma and space as separators while it should have been a space
-		$t_references = str_replace( '>,<', '> <', $p_references );
-		$t_references = explode( ' ', $t_references );
-		$references = array_map( 'trim', $t_references );
+		$t_references = explode(' ', $p_references);
+
+		$references = array();
+		foreach( $t_references AS $t_reference )
+		{
+			$references[] = trim( $t_reference );
+		}
 
 		$this->_references = $references;
 	}
@@ -423,10 +408,7 @@ class ERP_Mail_Parser
 
 	private function setPriority( $priority )
 	{
-		if ( $this->_priority === NULL )
-		{
-			$this->_priority = $priority;
-		}
+		$this->_priority = $priority;
 	}
 
 	private function setContentType( $primary, $secondary )
@@ -444,47 +426,36 @@ class ERP_Mail_Parser
 
 		$this->setContentType( $ctype_primary, $ctype_secondary );
 
-		$body = str_replace(array("\r\n", "\r"), "\n", $body);
 		$body = $this->process_body_encoding( $body, $charset );
 
 		if ( 'text' === $this->_ctype['primary'] &&	'plain' === $this->_ctype['secondary'] )
 		{
-			// We need to escape any markdown characters present for plaintext emails
-			if ( $this->_process_markdown )
-			{
-				$escapemarkdown = new Markdownify\Converter();
-				$escapeInText = $escapemarkdown->getescapeInText();
-				$body = preg_replace( $escapeInText['search'], $escapeInText['replace'], $body );
-			}
-
-			$this->_body = $body;
+			$this->_body = trim( $body );
 		}
 		elseif ( $this->_parse_html && 'text' === $this->_ctype['primary'] && 'html' === $this->_ctype['secondary'] )
 		{
-			if ( $this->_process_markdown )
+			if ( $this->_parse2markdown )
 			{
 				$html2markdown = new Markdownify\ConverterExtra();
 				$html2markdown->setKeepHTML( FALSE );
-				$html2markdown->setaddCssClass( FALSE );
-				$html2markdown->setLinkPosition($html2markdown::LINK_IN_PARAGRAPH); 
-				$body = $html2markdown->parseString( $body );
-				$this->_body = $body;
+				$this->_body = $html2markdown->parseString( $body );
+				$this->_body = strip_tags( $this->_body );
+				$this->_body = preg_replace( "/[\r\n](\s)*[\r\n](\s)*[\r\n]/", "\n\n", $this->_body );
+				$this->_body = trim( $this->_body );
 			}
 			else
 			{
 				$htmlToText = str_get_html( $body, true, true, $this->_encoding, false ); 
 
 				// extract text from HTML
-				$this->_body = $htmlToText->plaintext;
+				$this->_body = trim( $htmlToText->plaintext );
 			}
 		}
 		else
 		{
 			return( FALSE );
 		}
-
-		$this->_body = trim( $this->_body );
-
+		
 		return( TRUE );
 	}
 
@@ -517,8 +488,8 @@ class ERP_Mail_Parser
 				strtolower( $parts[ $i ]->ctype_secondary ) !== strtolower( $parts[ $i+1 ]->ctype_secondary )
 			)
 			{
-				if ( ( strtolower( $parts[ $i ]->ctype_secondary ) === 'plain' && $this->_parse_html && $this->_process_markdown ) ||
-					( strtolower( $parts[ $i ]->ctype_secondary ) === 'html' && !$this->_process_markdown ) )
+				if ( ( strtolower( $parts[ $i ]->ctype_secondary ) === 'plain' && $this->_parse2markdown ) ||
+					( strtolower( $parts[ $i ]->ctype_secondary ) === 'html' && !$this->_parse2markdown ) )
 				{
 					$i++;
 				}

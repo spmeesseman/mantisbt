@@ -1,5 +1,7 @@
 <?php
 
+/* This file is part of the Markdownify project, which is under LGPL license */
+
 namespace Markdownify;
 
 class ConverterExtra extends Converter
@@ -10,7 +12,7 @@ class ConverterExtra extends Converter
      *
      * @var array
      */
-    protected $table = [];
+    protected $table = array();
 
     /**
      * current col
@@ -25,13 +27,6 @@ class ConverterExtra extends Converter
      * @var int
      */
     protected $row = 0;
-
-    /**
-     * Add CSS class after the tag
-     *
-     * @var bool
-     */
-    protected $addCssClass = true;
 
     /**
      * constructor, see Markdownify::Markdownify() for more information
@@ -55,39 +50,39 @@ class ConverterExtra extends Converter
         $this->isMarkdownable['h6']['id'] = 'optional';
         $this->isMarkdownable['h6']['class'] = 'optional';
         // tables
-        $this->isMarkdownable['table'] = [];
-        $this->isMarkdownable['th'] = [
+        $this->isMarkdownable['table'] = array();
+        $this->isMarkdownable['th'] = array(
             'align' => 'optional',
-        ];
-        $this->isMarkdownable['td'] = [
+        );
+        $this->isMarkdownable['td'] = array(
             'align' => 'optional',
-        ];
-        $this->isMarkdownable['tr'] = [];
+        );
+        $this->isMarkdownable['tr'] = array();
         array_push($this->ignore, 'thead');
         array_push($this->ignore, 'tbody');
         array_push($this->ignore, 'tfoot');
         // definition lists
-        $this->isMarkdownable['dl'] = [];
-        $this->isMarkdownable['dd'] = [];
-        $this->isMarkdownable['dt'] = [];
+        $this->isMarkdownable['dl'] = array();
+        $this->isMarkdownable['dd'] = array();
+        $this->isMarkdownable['dt'] = array();
         // link class
         $this->isMarkdownable['a']['id'] = 'optional';
         $this->isMarkdownable['a']['class'] = 'optional';
         // footnotes
-        $this->isMarkdownable['fnref'] = [
+        $this->isMarkdownable['fnref'] = array(
             'target' => 'required',
-        ];
-        $this->isMarkdownable['footnotes'] = [];
-        $this->isMarkdownable['fn'] = [
+        );
+        $this->isMarkdownable['footnotes'] = array();
+        $this->isMarkdownable['fn'] = array(
             'name' => 'required',
-        ];
+        );
         $this->parser->blockElements['fnref'] = false;
         $this->parser->blockElements['fn'] = true;
         $this->parser->blockElements['footnotes'] = true;
         // abbr
-        $this->isMarkdownable['abbr'] = [
+        $this->isMarkdownable['abbr'] = array(
             'title' => 'required',
-        ];
+        );
         // build RegEx lookahead to decide wether table can pe parsed or not
         $inlineTags = array_keys($this->parser->blockElements, false);
         $colContents = '(?:[^<]|<(?:' . implode('|', $inlineTags) . '|[^a-z]))*';
@@ -125,7 +120,7 @@ class ConverterExtra extends Converter
             $this->stack();
         } else {
             $tag = $this->unstack();
-            if (!empty($tag['cssSelector']) && $this->addCssClass) {
+            if (!empty($tag['cssSelector'])) {
                 // {#id.class}
                 $this->out(' {' . $tag['cssSelector'] . '}');
             }
@@ -155,7 +150,7 @@ class ConverterExtra extends Converter
     protected function handleTag_a_converter($tag, $buffer)
     {
         $output = parent::handleTag_a_converter($tag, $buffer);
-        if (!empty($tag['cssSelector']) && $this->addCssClass) {
+        if (!empty($tag['cssSelector'])) {
             // [This link][id]{#id.class}
             $output .= '{' . $tag['cssSelector'] . '}';
         }
@@ -200,7 +195,7 @@ class ConverterExtra extends Converter
      */
     protected function flushStacked_abbr()
     {
-        $out = [];
+        $out = array();
         foreach ($this->stack['abbr'] as $k => $tag) {
             if (!isset($tag['unstacked'])) {
                 array_push($out, ' *[' . $tag['text'] . ']: ' . $tag['title']);
@@ -230,7 +225,7 @@ class ConverterExtra extends Converter
                     preg_match_all('#<th(?:\s+align=("|\')(left|right|center)\1)?\s*>#si', $matches[0], $cols);
                     $regEx = '';
                     $i = 1;
-                    $aligns = [];
+                    $aligns = array();
                     foreach ($cols[2] as $align) {
                         $align = strtolower($align);
                         array_push($aligns, $align);
@@ -249,11 +244,11 @@ class ConverterExtra extends Converter
                     $regEx = sprintf($this->tableLookaheadBody, $regEx);
                     if (preg_match($regEx, $this->parser->html, $matches, null, strlen($matches[0]))) {
                         // this is a markdownable table tag!
-                        $this->table = [
-                            'rows' => [],
-                            'col_widths' => [],
+                        $this->table = array(
+                            'rows' => array(),
+                            'col_widths' => array(),
                             'aligns' => $aligns,
-                        ];
+                        );
                         $this->row = 0;
                     } else {
                         // non markdownable table
@@ -264,18 +259,18 @@ class ConverterExtra extends Converter
                     $this->handleTagToText();
                 }
             } else {
-                $this->table = [
-                    'rows' => [],
-                    'col_widths' => [],
-                    'aligns' => [],
-                ];
+                $this->table = array(
+                    'rows' => array(),
+                    'col_widths' => array(),
+                    'aligns' => array(),
+                );
                 $this->row = 0;
             }
         } else {
             // finally build the table in Markdown Extra syntax
-            $separator = [];
+            $separator = array();
             if (!isset($this->table['aligns'])) {
-                $this->table['aligns'] = [];
+                $this->table['aligns'] = array();
             }
             // seperator with correct align identifiers
             foreach ($this->table['aligns'] as $col => $align) {
@@ -299,9 +294,9 @@ class ConverterExtra extends Converter
             }
             $separator = '|' . implode('|', $separator) . '|';
 
-            $rows = [];
+            $rows = array();
             // add padding
-            array_walk_recursive($this->table['rows'], [&$this, 'alignTdContent']);
+            array_walk_recursive($this->table['rows'], array(&$this, 'alignTdContent'));
             $header = array_shift($this->table['rows']);
             array_push($rows, '| ' . implode(' | ', $header) . ' |');
             array_push($rows, $separator);
@@ -309,7 +304,7 @@ class ConverterExtra extends Converter
                 array_push($rows, '| ' . implode(' | ', $row) . ' |');
             }
             $this->out(implode("\n" . $this->indent, $rows));
-            $this->table = [];
+            $this->table = array();
             $this->setLineBreaks(2);
         }
     }
@@ -524,7 +519,7 @@ class ConverterExtra extends Converter
         //   <fn name="...">...</fn>
         //   ...
         // </footnotes>
-        $html = preg_replace_callback('#<div class="footnotes">\s*<hr />\s*<ol>\s*(.+)\s*</ol>\s*</div>#Us', [&$this, '_makeFootnotes'], $html);
+        $html = preg_replace_callback('#<div class="footnotes">\s*<hr />\s*<ol>\s*(.+)\s*</ol>\s*</div>#Us', array(&$this, '_makeFootnotes'), $html);
 
         return parent::parseString($html);
     }
@@ -574,16 +569,5 @@ class ConverterExtra extends Converter
             $cssSelector .= '.' . join('.', $classes);
         }
         return $cssSelector;
-    }
-
-    /**
-     * set add CSS class after the tag
-     *
-     * @param bool $addCssClass
-     * @return void
-     */
-    public function setAddCssClass($addCssClass)
-    {
-        $this->addCssClass = $addCssClass;
     }
 }

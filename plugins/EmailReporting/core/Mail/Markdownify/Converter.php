@@ -1,5 +1,7 @@
 <?php
 
+/* This file is part of the Markdownify project, which is under LGPL license */
+
 namespace Markdownify;
 
 /**
@@ -32,7 +34,7 @@ class Converter
      *
      * @var array<string>
      */
-    protected $notConverted = [];
+    protected $notConverted = array();
 
     /**
      * skip conversion to markdown
@@ -80,68 +82,67 @@ class Converter
      *
      * @var array<string>
      */
-    protected $buffer = [];
+    protected $buffer = array();
 
     /**
      * stores current buffers
      *
      * @var array<string>
      */
-    protected $footnotes = [];
+    protected $footnotes = array();
 
     /**
      * tags with elements which can be handled by markdown
      *
      * @var array<string>
      */
-    protected $isMarkdownable = [
-        'p' => [],
-        'ul' => [],
-        'ol' => [],
-        'li' => [],
-        'br' => [],
-        'blockquote' => [],
-        'code' => [],
-        'pre' => [],
-        'a' => [
+    protected $isMarkdownable = array(
+        'p' => array(),
+        'ul' => array(),
+        'ol' => array(),
+        'li' => array(),
+        'br' => array(),
+        'blockquote' => array(),
+        'code' => array(),
+        'pre' => array(),
+        'a' => array(
             'href' => 'required',
             'title' => 'optional',
-        ],
-        'strong' => [],
-        'b' => [],
-        'em' => [],
-        'i' => [],
-        'img' => [
+        ),
+        'strong' => array(),
+        'b' => array(),
+        'em' => array(),
+        'i' => array(),
+        'img' => array(
             'src' => 'required',
             'alt' => 'optional',
             'title' => 'optional',
-        ],
-        'h1' => [],
-        'h2' => [],
-        'h3' => [],
-        'h4' => [],
-        'h5' => [],
-        'h6' => [],
-        'hr' => [],
-    ];
+        ),
+        'h1' => array(),
+        'h2' => array(),
+        'h3' => array(),
+        'h4' => array(),
+        'h5' => array(),
+        'h6' => array(),
+        'hr' => array(),
+    );
 
     /**
      * html tags to be ignored (contents will be parsed)
      *
      * @var array<string>
      */
-    protected $ignore = [
+    protected $ignore = array(
         'html',
         'body',
-        'o:p',
-    ];
+    );
 
     /**
      * html tags to be dropped (contents will not be parsed!)
      *
      * @var array<string>
      */
-    protected $drop = [
+    protected $drop = array(
         'script',
         'head',
         'style',
@@ -150,16 +151,16 @@ class Converter
         'object',
         'param',
         'iframe',
-    ];
+    );
 
     /**
      * html block tags that allow inline & block children
      *
      * @var array<string>
      */
-    protected $allowMixedChildren = [
+    protected $allowMixedChildren = array(
         'li'
-    ];
+    );
 
     /**
      * Markdown indents which could be wrapped
@@ -167,13 +168,13 @@ class Converter
      *
      * @var array<string>
      */
-    protected $wrappableIndents = [
+    protected $wrappableIndents = array(
         '\*   ', // ul
         '\d.  ', // ol
         '\d\d. ', // ol
         '> ', // blockquote
         '', // p
-    ];
+    );
 
     /**
      * list of chars which have to be escaped in normal text
@@ -183,17 +184,17 @@ class Converter
      *
      * TODO: what's with block chars / sequences at the beginning of a block?
      */
-    protected $escapeInText = [
-        '\*' => '\\\\*', // *
-        '_' => '\\\\_', // _
-        '\|' => '\\\\|', // |
+    protected $escapeInText = array(
+        '\*\*([^*]+)\*\*' => '\*\*$1\*\*', // strong
+        '\*([^*]+)\*' => '\*$1\*', // em
+        '__(?! |_)(.+)(?!<_| )__' => '\_\_$1\_\_', // strong
+        '_(?! |_)(.+)(?!<_| )_' => '\_$1\_', // em
         '([-*_])([ ]{0,2}\1){2,}' => '\\\\$0', // hr
-        '`' => '\\\\`', // code
-        '\[(.+)\](\s*\()' => '\\\\[$1\\\\]$2', // links: [text] (url) => [text\] (url)
-        '\[(.+)\](\s*)\[(.*)\]' => '\\\\[$1\\\\]$2\\\\[$3\\\\]', // links: [text][id] => [text\][id\]
-        '^#(#{0,5}) ' => '\\\\#$1 ', // header #
-        '^=(=*\h*)$' => '\\\\=$1', // header =
-    ];
+        '`' => '\`', // code
+        '\[(.+)\](\s*\()' => '\[$1\]$2', // links: [text] (url) => [text\] (url)
+        '\[(.+)\](\s*)\[(.*)\]' => '\[$1\]$2\[$3\]', // links: [text][id] => [text\][id\]
+        '^#(#{0,5}) ' => '\#$1 ', // header
+    );
 
     /**
      * wether last processed node was a block tag or not
@@ -219,7 +220,7 @@ class Converter
      *
      * @var array<array>
      */
-    protected $stack = [];
+    protected $stack = array();
 
     /**
      * current indentation
@@ -253,16 +254,16 @@ class Converter
         $this->parser->noTagsInCode = true;
 
         // we don't have to do this every time
-        $search = [];
-        $replace = [];
+        $search = array();
+        $replace = array();
         foreach ($this->escapeInText as $s => $r) {
-            array_push($search, '@(?<!\\\)' . $s . '@mU');
+            array_push($search, '@(?<!\\\)' . $s . '@U');
             array_push($replace, $r);
         }
-        $this->escapeInText = [
+        $this->escapeInText = array(
             'search' => $search,
             'replace' => $replace
-        ];
+        );
     }
 
     /**
@@ -275,7 +276,6 @@ class Converter
     {
         $this->resetState();
 
-        $html = str_replace(array("\r\n", "\r"), "\n", $html);
         $this->parser->html = $html;
         $this->parse();
 
@@ -305,16 +305,6 @@ class Converter
     }
 
     /**
-     * return escapeInText
-     *
-     * @return array escapeInText
-     */
-    public function getescapeInText()
-    {
-        return $this->escapeInText;
-    }
-
-    /**
      * iterate through the nodes and decide what we
      * shall do with the current node
      *
@@ -324,8 +314,7 @@ class Converter
     protected function parse()
     {
         $this->output = '';
-
-        // Drop tags
+        // drop tags
         $this->parser->html = preg_replace('#<(' . implode('|', $this->drop) . ')[^>]*>.*</\\1>#sU', '', $this->parser->html);
         while ($this->parser->nextNode()) {
             switch ($this->parser->nodeType) {
@@ -341,7 +330,6 @@ class Converter
                     // else drop
                     break;
                 case 'text':
-                    $this->flushLinebreaks();
                     $this->handleText();
                     break;
                 case 'tag':
@@ -358,7 +346,7 @@ class Converter
                     if ($this->skipConversion) {
                         $this->isMarkdownable(); // update notConverted
                         $this->handleTagToText();
-                        break;
+                        continue;
                     }
 
                     // block elements
@@ -408,11 +396,10 @@ class Converter
             }
         }
         // cleanup
-        $this->output = implode("\n", array_map('rtrim', explode("\n", $this->output)));
-        $this->output = rtrim(str_replace(['&amp;', '&lt;', '&gt;', '&nbsp;'], ['&', '<', '>', ' '], $this->output));
+        $this->output = rtrim(str_replace('&amp;', '&', str_replace('&lt;', '<', str_replace('&gt;', '>', $this->output))));
         // end parsing, flush stacked tags
         $this->flushFootnotes();
-        $this->stack = [];
+        $this->stack = array();
     }
 
     /**
@@ -521,10 +508,10 @@ class Converter
     {
         if (!$this->keepHTML) {
             if (!$this->parser->isStartTag && $this->parser->isBlockElement) {
-                $this->setLineBreaks(1);
+                $this->setLineBreaks(2);
             }
         } else {
-            // don't convert to markdown inside this tag
+            // dont convert to markdown inside this tag
             /** TODO: markdown extra **/
             if (!$this->parser->isEmptyTag) {
                 if ($this->parser->isStartTag) {
@@ -541,7 +528,7 @@ class Converter
             if ($this->parser->isBlockElement) {
                 if ($this->parser->isStartTag) {
                     // looks like ins or del are block elements now
-                    if (in_array($this->parent(), ['ins', 'del'])) {
+                    if (in_array($this->parent(), array('ins', 'del'))) {
                         $this->out("\n", true);
                         $this->indent('  ');
                     }
@@ -574,7 +561,7 @@ class Converter
                         $this->indent = $indent;
                     }
 
-                    if (in_array($this->parent(), ['ins', 'del'])) {
+                    if (in_array($this->parent(), array('ins', 'del'))) {
                         // ins or del was block element
                         $this->out("\n");
                         $this->indent('  ');
@@ -588,12 +575,12 @@ class Converter
             } else {
                 $this->out($this->parser->node);
             }
-            if (in_array($this->parser->tagName, ['code', 'pre'])) {
+            if (in_array($this->parser->tagName, array('code', 'pre'))) {
                 if ($this->parser->isStartTag) {
                     $this->buffer();
                 } else {
                     // add stuff so cleanup just reverses this
-                    $this->out(str_replace(['&lt;', '&gt;'], ['&amp;lt;', '&amp;gt;'], $this->unbuffer()));
+                    $this->out(str_replace('&lt;', '&amp;lt;', str_replace('&gt;', '&amp;gt;', $this->unbuffer())));
                 }
             }
         }
@@ -618,7 +605,7 @@ class Converter
                 $this->parser->node = preg_replace($this->escapeInText['search'], $this->escapeInText['replace'], $this->parser->node);
             }
         } else {
-            $this->parser->node = str_replace(['&quot;', '&apos'], ['"', '\''], $this->parser->node);
+            $this->parser->node = str_replace(array('&quot;', '&apos'), array('"', '\''), $this->parser->node);
         }
         $this->out($this->parser->node);
         $this->lastClosedTag = '';
@@ -747,7 +734,6 @@ class Converter
     {
         if (!$this->parser->isStartTag) {
             $this->setLineBreaks(2);
-            $this->parser->html = ltrim($this->parser->html);
         }
     }
 
@@ -801,16 +787,20 @@ class Converter
             return '[' . $buffer . ']()';
         }
 
-        if (rtrim($buffer, '/') == rtrim($tag['href'], '/') && empty($tag['title'])) {
+        if ($buffer == $tag['href'] && empty($tag['title'])) {
             // <http://example.com>
-            return '<' . $buffer . '>';
+            // ERP-modification: Use [ ] instead of < > so that we do not cause problems with strip_tags
+            //return '<' . $buffer . '>';
+            return '[' . $buffer . ']';
         }
 
         $bufferDecoded = $this->decode(trim($buffer));
         if (substr($tag['href'], 0, 7) == 'mailto:' && 'mailto:' . $bufferDecoded == $tag['href']) {
             if (is_null($tag['title'])) {
                 // <mail@example.com>
-                return '<' . $bufferDecoded . '>';
+                // ERP-modification: Use [ ] instead of < > so that we do not cause problems with strip_tags
+                //return '<' . $bufferDecoded . '>';
+                return '[' . $bufferDecoded . ']';
             }
             // [mail@example.com][1]
             // ...
@@ -898,11 +888,11 @@ class Converter
         }
         if (!$link_id) {
             $link_id = count($this->footnotes) + 1;
-            $tag = [
+            $tag = array(
                 'href' => $this->parser->tagAttributes['src'],
                 'linkID' => $link_id,
                 'title' => $this->parser->tagAttributes['title']
-            ];
+            );
             array_push($this->footnotes, $tag);
         }
         $out .= '[' . $link_id . ']';
@@ -1001,14 +991,14 @@ class Converter
         } else {
             $this->unstack();
             if ($this->parent() != 'li' || preg_match('#^\s*(</li\s*>\s*<li\s*>\s*)?<(p|blockquote)\s*>#sU', $this->parser->html)) {
-                // don't make Markdown add unneeded paragraphs
+                // dont make Markdown add unneeded paragraphs
                 $this->setLineBreaks(2);
             }
         }
     }
 
     /**
-     * handle <ol> tags
+     * handle <ul> tags
      *
      * @param void
      * @return void
@@ -1082,7 +1072,7 @@ class Converter
     protected function stack()
     {
         if (!isset($this->stack[$this->parser->tagName])) {
-            $this->stack[$this->parser->tagName] = [];
+            $this->stack[$this->parser->tagName] = array();
         }
         array_push($this->stack[$this->parser->tagName], $this->parser->tagAttributes);
     }
@@ -1233,9 +1223,54 @@ class Converter
      * @author derernst@gmx.ch <http://www.php.net/manual/en/function.html-entity-decode.php#68536>
      * @author Milian Wolff <http://milianw.de>
      */
-    protected function decode($text)
+    protected function decode($text, $quote_style = ENT_QUOTES)
     {
-        return htmlspecialchars_decode($text, ENT_QUOTES);
+        return htmlspecialchars_decode($text, $quote_style);
+    }
+
+    /**
+     * callback for decode() which converts a hexadecimal entity to UTF-8
+     *
+     * @param array $matches
+     * @return string UTF-8 encoded
+     */
+    protected function _decode_hex($matches)
+    {
+        return $this->unichr(hexdec($matches[1]));
+    }
+
+    /**
+     * callback for decode() which converts a numerical entity to UTF-8
+     *
+     * @param array $matches
+     * @return string UTF-8 encoded
+     */
+    protected function _decode_numeric($matches)
+    {
+        return $this->unichr($matches[1]);
+    }
+
+    /**
+     * UTF-8 chr() which supports numeric entities
+     *
+     * @author grey - greywyvern - com <http://www.php.net/manual/en/function.chr.php#55978>
+     * @param array $matches
+     * @return string UTF-8 encoded
+     */
+    protected function unichr($dec)
+    {
+        if ($dec < 128) {
+            $utf = chr($dec);
+        } elseif ($dec < 2048) {
+            $utf = chr(192 + (($dec - ($dec % 64)) / 64));
+            $utf .= chr(128 + ($dec % 64));
+        } else {
+            $utf = chr(224 + (($dec - ($dec % 4096)) / 4096));
+            $utf .= chr(128 + ((($dec % 4096) - ($dec % 64)) / 64));
+            $utf .= chr(128 + ($dec % 64));
+        }
+
+        return $utf;
     }
 
     /**
@@ -1275,7 +1310,7 @@ class Converter
         while (preg_match($regexp, $str, $matches)) {
             $string = $matches[0];
             $str = ltrim(substr($str, strlen($string)));
-            if (!$cut && isset($str[0]) && in_array($str[0], ['.', '!', ';', ':', '?', ','])) {
+            if (!$cut && isset($str[0]) && in_array($str[0], array('.', '!', ';', ':', '?', ','))) {
                 $string .= $str[0];
                 $str = ltrim(substr($str, 1));
             }
@@ -1329,7 +1364,7 @@ class Converter
      */
     protected function fixInlineElementSpacing()
     {
-        if ($this->parser->isStartTag && !$this->parser->isEmptyTag) {
+        if ($this->parser->isStartTag) {
             // move spaces after the start element to before the element
             if (preg_match('~^(\s+)~', $this->parser->html, $matches)) {
                 $this->out($matches[1]);
@@ -1356,14 +1391,14 @@ class Converter
      */
     protected function resetState()
     {
-        $this->notConverted = [];
+        $this->notConverted = array();
         $this->skipConversion = false;
-        $this->buffer = [];
+        $this->buffer = array();
         $this->indent = '';
-        $this->stack = [];
+        $this->stack = array();
         $this->lineBreaks = 0;
         $this->lastClosedTag = '';
         $this->lastWasBlockTag = false;
-        $this->footnotes = [];
+        $this->footnotes = array();
     }
 }

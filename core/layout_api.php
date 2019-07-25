@@ -756,7 +756,7 @@ function layout_print_sidebar( $p_active_sidebar_page = null ) {
 		# Project Wiki
 		if( ON == config_get_global( 'wiki_enable' ) && access_has_project_level( REPORTER, $t_current_project )  ) {
 			//layout_sidebar_menu( 'plugin.php?page=IFramed/main&url=wiki.php%3Ftype=project%26id=' . $t_current_project, 'wiki', 'fa-book', $p_active_sidebar_page );
-			layout_sidebar_menu( 'wiki.php?type=project&amp;id=' . $t_current_project, 'wiki', 'fa-book', $p_active_sidebar_page );
+			layout_sidebar_menu( 'wiki.php?type=project&amp;id=' . $t_current_project, 'wiki', 'fab fa-wikipedia-w', $p_active_sidebar_page );
 		}
 		# Time Tracking / Billing
 		if( config_get( 'time_tracking_enabled' ) && access_has_project_level( config_get( 'time_tracking_reporting_threshold', $t_current_project ) ) ) {
@@ -895,8 +895,15 @@ function layout_sidebar_menu( $p_page, $p_title, $p_icon, $p_active_sidebar_page
 		$t_url = helper_mantis_url( $p_page );
 	}
 
+	$t_fa_class = 'fa';
+	$t_fa_idx = strpos($p_icon, ' ');
+	if ($t_fa_idx != FALSE) {
+		$t_fa_class = substr($p_icon, 0, $t_fa_idx);
+		$p_icon = substr($p_icon, $t_fa_idx + 1);
+	}
+
 	echo '<a href="' . $t_url . '">' . "\n";
-	echo '<i class="menu-icon fa ' . $p_icon . '"></i> ' . "\n";
+	echo '<i class="menu-icon ' . $t_fa_class . ' ' . $p_icon . '"></i> ' . "\n";
 	echo '<span class="menu-text"> ' . lang_get_defaulted( $p_title ) . ' </span>' . "\n";
 	echo '</a>' . "\n";
 	echo '<b class="arrow"></b>' . "\n";

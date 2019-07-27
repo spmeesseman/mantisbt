@@ -902,7 +902,20 @@ function layout_sidebar_menu( $p_page, $p_title, $p_icon, $p_active_sidebar_page
 		$p_icon = substr($p_icon, $t_fa_idx + 1);
 	}
 
-	echo '<a href="' . $t_url . '">' . "\n";
+	echo '<a href="' . $t_url . '"';
+
+	#
+	# SPM
+	#
+	if( (stripos( $p_page, 'https:' ) === 0 || stripos( $p_page, 'http:' ) === 0) &&
+	     strstr($t_url, "wiki.php") == FALSE && strstr($t_url, "IFramed") == FALSE && config_get( 'html_make_links' ) == LINKS_NEW_WINDOW ) {
+		echo ' target="_blank"';
+	}
+	#
+	# SPM End
+	#
+
+	echo '>' . "\n";
 	echo '<i class="menu-icon ' . $t_fa_class . ' ' . $p_icon . '"></i> ' . "\n";
 	echo '<span class="menu-text"> ' . lang_get_defaulted( $p_title ) . ' </span>' . "\n";
 	echo '</a>' . "\n";

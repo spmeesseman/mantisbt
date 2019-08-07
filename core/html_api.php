@@ -221,7 +221,7 @@ function html_css() {
 		if( $t_stylesheet_path == 'status_config.php' ) {
 			$t_stylesheet_path = helper_url_combine(
 				helper_mantis_url( 'css/status_config.php' ),
-				'cache_key=' . helper_generate_cache_key( array( 'user' ) )
+				'cache_key=' . helper_generate_cache_key( array( 'user', 'project' ) )
 			);
 		}
 		html_css_link( $t_stylesheet_path );

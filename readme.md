@@ -9,6 +9,7 @@
   - [Description](#Description)
   - [Changes](#Changes)
   - [Changed File List](#Changed-File-List)
+  - [Supporing Font Awesome Pro](#Supporing-Font-Awesome-Pro)
 
 ## Description
 
@@ -33,3 +34,32 @@ This is a fork of the v2.21.1 [MantisBT project](https://github.com/mantisbt/man
 - changelog_page.php
 - roadmap_page.php
 - library/jpgraph
+
+## Supporing Font Awesome Pro
+
+A pro license is needed of course.  A mere $60 U.S., some well spent money.
+
+Obtain two files and place into the mantisbt css directory.
+
+- css/font-awesome-pro-5.9.0.min.css
+- css/font-awesome-pro-v4shims.min.css
+
+Add to the mantisbt js directory
+
+-js/font-awesome-pro.js
+
+Add to config_inc.php custom_headers:
+
+    $g_custom_headers = array("Content-Security-Policy: style-src https://kit-pro.fontawesome.com/ 'self' 'unsafe-inline'; script-src https://kit.fontawesome.com/ 'self' 'unsafe-inline'");
+
+Add to config_inc.php scripts_included (undocumented):
+
+    $g_scripts_included = array( 'font-awesome-pro.js' );
+
+This will effectively override the default font-awesome icons and use the "Regular" version of the pro set of icons.  The icon set used can be specified with the icon itself, for example to use an icon from the **Brand** icon set:
+
+    fab fa-readme
+
+Or for example an icon from the **Light** icon set:
+
+    fal fa-spider

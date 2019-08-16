@@ -862,7 +862,7 @@ function layout_sidebar_begin() {
 	$t_collapse_block = is_collapsed( 'sidebar' );
 	$t_block_css = $t_collapse_block ? 'menu-min' : '';
 
-	echo '<div id="sidebar" class="sidebar sidebar-fixed responsive compact ' . $t_block_css . '">';
+	echo '<div id="sidebar" class="sidebar sidebar-fixed responsive compact sidebar-scroll-native ' . $t_block_css . '">';
 
 	echo '<ul class="nav nav-list">';
 }

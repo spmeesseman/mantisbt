@@ -2264,14 +2264,15 @@ no_such_element:-o-prefocus,
     top: auto;
     float: none !important;
     z-index: 1027;
+    height: 100%;
 }
 .sidebar.sidebar-fixed:before {
-    height: 5000px;
+    height: 100%;
     top: auto;
     bottom: auto;
 }
 .sidebar-scroll-native {
-    overflow-y: scroll !important;
+    overflow-y: auto !important;
     overflow-x: hidden;
 }
 body.mob-safari .sidebar.sidebar-fixed {

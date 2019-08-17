@@ -2264,7 +2264,7 @@ no_such_element:-o-prefocus,
     top: auto;
     float: none !important;
     z-index: 1027;
-    height: 100%;
+    height: 95.2%;
 }
 .sidebar.sidebar-fixed:before {
     height: 100%;

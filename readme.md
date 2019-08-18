@@ -22,6 +22,7 @@ This is a fork of the v2.21.1 [MantisBT project](https://github.com/mantisbt/man
 - Use project name in set_project url
 - Add buttons in changelog and roadmap pages for ganttchart
 - Use FontAwesome Pro icons
+- Remove redundant text 'Manage' from all management tabs
 - Add jpgraph
 
 ## Changed File List
@@ -33,24 +34,33 @@ This is a fork of the v2.21.1 [MantisBT project](https://github.com/mantisbt/man
 - js/ace.min.js
 - changelog_page.php
 - roadmap_page.php
+- lang/strings_english.php
 - library/jpgraph
+
+## DokuWiki Changed File List
+
+- /lib/tpl/dokuwiki/style.ini
+- /lib/tpl/dokuwiki/css/basic.less
+- /lib/tpl/dokuwiki/images/page-background.svg
+- /lib/tpl/dokuwiki/main.php
+- /vendor/geshi/geshi/src/geshi.php
 
 ## Supporing Font Awesome Pro
 
-A pro license is needed of course.  A mere $60 U.S., some well spent money.
+A [standard license](https://fontawesome.com/plans/standard) is of course needed, at a more than fair price (at times on sale as well).  
 
-Obtain two files and place into the mantisbt css directory.
+Add to the mantisbt css directory:
 
 - css/font-awesome-pro-5.9.0.min.css
 - css/font-awesome-pro-v4shims.min.css
 
-Add to the mantisbt js directory
+Add to the mantisbt js directory:
 
 -js/font-awesome-pro.js
 
 Add to config_inc.php custom_headers:
 
-    $g_custom_headers = array("Content-Security-Policy: style-src https://kit-pro.fontawesome.com/ 'self' 'unsafe-inline'; script-src https://kit.fontawesome.com/ 'self' 'unsafe-inline'");
+    $g_custom_headers = array("Content-Security-Policy: style-src https://kit-pro.fontawesome.com/ 'self'; script-src https://kit.fontawesome.com/ 'self'");
 
 Add to config_inc.php scripts_included (undocumented):
 

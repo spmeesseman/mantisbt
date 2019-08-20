@@ -600,6 +600,33 @@ $(document).ready( function() {
 			.addClass(getColorClassName(me.val()));
 		me.data('prev', me.val());
 	});
+
+	var sidebardiv = document.getElementById('sidebar');
+	var maindiv = document.getElementsByClassName('main-content')[0];
+	var footerdiv = document.getElementsByClassName('footer-inner')[0];
+
+	var hasVerticalScrollbar= sidebardiv.scrollHeight - sidebardiv.clientHeight;
+	if (hasVerticalScrollbar > 0) {
+		sidebardiv.style.width = '175px' ;
+	}
+	else {
+		sidebardiv.style.width = '155px' ;
+	}
+
+	maindiv.style.setProperty('margin-left', sidebardiv.style.width, 'important');
+	footerdiv.style.setProperty('left', sidebardiv.style.width, 'important');
+
+	window.addEventListener( 'resize', function( event ) {
+		var hasVerticalScrollbar = sidebardiv.scrollHeight - sidebardiv.clientHeight;
+		if (hasVerticalScrollbar > 0) {
+			sidebardiv.style.width = '175px';
+		}
+		else{
+			sidebardiv.style.width = '155px';
+		}
+		maindiv.style.setProperty('margin-left', sidebardiv.style.width, 'important');
+		footerdiv.style.setProperty('left', sidebardiv.style.width, 'important');
+	}, false );
 });
 
 function setBugLabel() {

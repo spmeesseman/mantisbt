@@ -8,7 +8,7 @@
 - [ProjectPages MantisBT Plugin](#ProjectPages-MantisBT-Plugin)
   - [Description](#Description)
   - [Changes](#Changes)
-  - [Changed File List](#Changed-File-List)
+  - [DokuWiki Changed File List](#DokuWiki-Changed-File-List)
   - [Supporing Font Awesome Pro](#Supporing-Font-Awesome-Pro)
 
 ## Description
@@ -17,25 +17,17 @@ This is a fork of the v2.21.1 [MantisBT project](https://github.com/mantisbt/man
 
 ## Changes
 
-- Improved sidebar
-- Modified wiki link handling
-- Use project name in set_project url
-- Add buttons in changelog and roadmap pages for ganttchart
-- Use FontAwesome Pro icons
-- Remove redundant text 'Manage' from all management tabs
-- Add jpgraph
-
-## Changed File List
-
-- core/layout_api.php
-- set_project.php
-- wiki.php
-- css/ace.min.css
-- js/ace.min.js
-- changelog_page.php
-- roadmap_page.php
-- lang/strings_english.php
-- library/jpgraph
+|Change|Files|
+|---|---|
+|FIx sidebar active page highlight|core/layout_api.php|
+|Improved sidebar|css/ace-mantis.css, css/ace.css|
+|Dynamic width sidebar based on overflow|js/common.js|
+|Modified wiki link handling|wiki.php|
+|Use project name in set_project url|set_project.php|
+|Add buttons in changelog and roadmap pages for ganttchart|changelog_page.php, roadmap_page.php|
+|Use FontAwesome Pro icons|css/ace.css, js/ace.js|
+|Remove redundant text 'Manage' from all management tabs|lang/strings_english.txt|
+|Add jpgraph|library/jpgraph/*|
 
 ## DokuWiki Changed File List
 

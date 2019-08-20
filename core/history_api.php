@@ -124,8 +124,10 @@ function history_log_event( $p_bug_id, $p_field_name, $p_old_value ) {
  * @param string  $p_new_value The optional value to store in the new_value field.
  * @return void
  */
-function history_log_event_special( $p_bug_id, $p_type, $p_old_value = '', $p_new_value = '' ) {
-	$t_user_id = auth_get_current_user_id();
+function history_log_event_special( $p_bug_id, $p_type, $p_old_value = '', $p_new_value = '', $p_user_id = null ) {
+	if( null === $p_user_id ) {
+		$p_user_id = auth_get_current_user_id();
+	}
 
 	if( is_null( $p_old_value ) ) {
 		$c_old_value = '';
@@ -144,7 +146,7 @@ function history_log_event_special( $p_bug_id, $p_type, $p_old_value = '', $p_ne
 					( user_id, bug_id, date_modified, type, old_value, new_value, field_name )
 				VALUES
 					( ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ',' . db_param() . ', ' . db_param() . ')';
-	db_query( $t_query, array( $t_user_id, $p_bug_id, db_now(), $p_type, $c_old_value, $c_new_value, '' ) );
+	db_query( $t_query, array( $p_user_id, $p_bug_id, db_now(), $p_type, $c_old_value, $c_new_value, '' ) );
 }
 
 /**

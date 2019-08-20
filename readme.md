@@ -19,7 +19,7 @@ This is a fork of the v2.21.1 [MantisBT project](https://github.com/mantisbt/man
 
 |Change|Files|
 |---|---|
-|FIx sidebar active page highlight|core/layout_api.php|
+|Fix sidebar active page highlight|core/layout_api.php|
 |Improved sidebar|css/ace-mantis.css, css/ace.css|
 |Dynamic width sidebar based on overflow|js/common.js|
 |Modified wiki link handling|wiki.php|
@@ -28,6 +28,8 @@ This is a fork of the v2.21.1 [MantisBT project](https://github.com/mantisbt/man
 |Use FontAwesome Pro icons|css/ace.css, js/ace.js|
 |Remove redundant text 'Manage' from all management tabs|lang/strings_english.txt|
 |Add jpgraph|library/jpgraph/*|
+|Add userid param to history_log_event_special()|core/history_api.php|
+|Call history_log_event_special() with userid|core/tag_api.php|
 
 ## DokuWiki Changed File List
 

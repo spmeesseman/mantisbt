@@ -62,6 +62,35 @@ $(document).ready( function() {
 		$('#projects-list .projects-searchbox').hide();
 	}
 
+	var sidebardiv = document.getElementById('sidebar');
+	var maindiv = document.getElementsByClassName('main-content')[0];
+	var footerdiv = document.getElementsByClassName('footer-inner')[0];
+	var isMin = sidebardiv.classList.contains('menu-min');
+
+	var hasVerticalScrollbar= sidebardiv.scrollHeight - sidebardiv.clientHeight;
+	if (hasVerticalScrollbar > 0) {
+		sidebardiv.style.width = !isMin ? '175px' : '63px';
+	}
+	else {
+		sidebardiv.style.width = !isMin ? '155px' : '43px';
+	}
+
+	maindiv.style.setProperty('margin-left', sidebardiv.style.width, 'important');
+	footerdiv.style.setProperty('left', sidebardiv.style.width, 'important');
+
+	window.addEventListener( 'resize', function( event ) {
+		var hasVerticalScrollbar = sidebardiv.scrollHeight - sidebardiv.clientHeight;
+		var isMin = sidebardiv.classList.contains('menu-min');
+		if (hasVerticalScrollbar > 0) {
+			sidebardiv.style.width = !isMin ? '175px' : '63px';
+		}
+		else{
+			sidebardiv.style.width = !isMin ? '155px' : '43px';
+		}
+		maindiv.style.setProperty('margin-left', sidebardiv.style.width, 'important');
+		footerdiv.style.setProperty('left', sidebardiv.style.width, 'important');
+	}, false );
+
 	/**
 	 * Events to manage focus when displaying the dropdown.
 	 * - Focus on the active item to position the scrollable list on that item.
@@ -164,6 +193,16 @@ $(document).ready( function() {
 		t_cookie += '|' + t_id + ':' + t_value;
 
 		SetCookie("collapse_settings", t_cookie);
+
+		var hasVerticalScrollbar = sidebardiv.scrollHeight - sidebardiv.clientHeight;
+		if (hasVerticalScrollbar > 0) {
+			sidebardiv.style.width = !t_value ? '175px' : '63px';
+		}
+		else{
+			sidebardiv.style.width = !t_value ? '155px' : '43px';
+		}
+		maindiv.style.setProperty('margin-left', sidebardiv.style.width, 'important');
+		footerdiv.style.setProperty('left', sidebardiv.style.width, 'important');
     });
 
     $('input[type=text].typeahead').each(function() {
@@ -600,33 +639,6 @@ $(document).ready( function() {
 			.addClass(getColorClassName(me.val()));
 		me.data('prev', me.val());
 	});
-
-	var sidebardiv = document.getElementById('sidebar');
-	var maindiv = document.getElementsByClassName('main-content')[0];
-	var footerdiv = document.getElementsByClassName('footer-inner')[0];
-
-	var hasVerticalScrollbar= sidebardiv.scrollHeight - sidebardiv.clientHeight;
-	if (hasVerticalScrollbar > 0) {
-		sidebardiv.style.width = '175px' ;
-	}
-	else {
-		sidebardiv.style.width = '155px' ;
-	}
-
-	maindiv.style.setProperty('margin-left', sidebardiv.style.width, 'important');
-	footerdiv.style.setProperty('left', sidebardiv.style.width, 'important');
-
-	window.addEventListener( 'resize', function( event ) {
-		var hasVerticalScrollbar = sidebardiv.scrollHeight - sidebardiv.clientHeight;
-		if (hasVerticalScrollbar > 0) {
-			sidebardiv.style.width = '175px';
-		}
-		else{
-			sidebardiv.style.width = '155px';
-		}
-		maindiv.style.setProperty('margin-left', sidebardiv.style.width, 'important');
-		footerdiv.style.setProperty('left', sidebardiv.style.width, 'important');
-	}, false );
 });
 
 function setBugLabel() {

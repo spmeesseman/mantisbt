@@ -20,17 +20,24 @@ This is a fork of the v2.21.1 [MantisBT project](https://github.com/mantisbt/man
 |Change|Files|
 |---|---|
 |Fix sidebar active page highlight|core/layout_api.php|
-|Improved sidebar|css/ace-mantis.css, css/ace.css|
+|Add sidebar-scroll-native class to sidebar|core/layout_api.php|
+|Increse default sidebar width|css/ace-mantis.css, css/ace.css|
+|Sidebar overflow-y changed to auto|css/ace-mantis.css, css/ace.css|
 |Dynamic width sidebar based on overflow|js/common.js|
-|Modified wiki link handling|wiki.php|
-|Use project name in set_project url|set_project.php|
+|Dynamic width sidebar based on manu min/max sidebar-toggle()|js/common.js|
+|Modified wiki link handling using IFramed plugin|wiki.php|
+|Add option to use project_name in set_project url|set_project.php|
 |Add buttons in changelog and roadmap pages for ganttchart|changelog_page.php, roadmap_page.php|
 |Use FontAwesome Pro icons|css/ace.css, js/ace.js|
 |Remove redundant text 'Manage' from all management tabs|lang/strings_english.txt|
-|Add jpgraph|library/jpgraph/*|
+|Add jpgraph library (for GanttChart)|library/jpgraph/*|
+|Add #function_default_to_value to CUSTOM_FIELD_TYPE_STRING|core/cfdefs/cfdef_standard.php|
 
 ## DokuWiki Changed File List
 
+- /conf/acl.auth.php
+- /inc/auth/mantis.class.php
+- /lib/plugins/mantis/syntax.php
 - /lib/tpl/dokuwiki/style.ini
 - /lib/tpl/dokuwiki/css/basic.less
 - /lib/tpl/dokuwiki/images/page-background.svg

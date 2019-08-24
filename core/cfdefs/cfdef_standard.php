@@ -30,6 +30,7 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_STRING] = array (
 	# MySQL 4-bytes UTF-8 chars workaround #21101
 	'#function_value_to_database' => 'db_mysql_fix_utf8',
 	'#function_database_to_value' => null,
+	'#function_default_to_value' => 'cfdef_prepare_string_default',
 	'#function_print_input' => 'cfdef_input_textbox',
 	'#function_print_value' => null,
 	'#function_string_value' => 'cfdef_prepare_string',

@@ -51,7 +51,11 @@ require_api( 'project_api.php' );
 require_api( 'string_api.php' );
 require_api( 'utility_api.php' );
 
-$f_project_id	= gpc_get_string( 'project_id' );
+$f_project_id = gpc_get_string( 'project_id', null );
+if (!isset($f_project_id)) {
+	$f_project_id = project_get_id_by_name( gpc_get_string( 'project' ) );
+}
+
 $f_make_default	= gpc_get_bool( 'make_default' );
 $f_ref			= gpc_get_string( 'ref', '' );
 

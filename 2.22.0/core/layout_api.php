@@ -276,7 +276,8 @@ function layout_head_css() {
 	# page specific plugin styles
 
 	# theme styles
-	html_css_link( 'ace.min.css' );
+	html_css_link( 'ace.css' );
+	#html_css_link( 'ace.min.css' );
 	html_css_link( 'ace-mantis.css' );
 	html_css_link( 'ace-skins.min.css' );
 
@@ -333,7 +334,8 @@ function layout_body_javascript() {
 	}
 
 	# ace theme scripts
-	html_javascript_link( 'ace.min.js' );
+	html_javascript_link( 'ace.js' );
+	#html_javascript_link( 'ace.min.js' );
 }
 
 
@@ -412,11 +414,12 @@ function layout_navbar() {
 	echo '<span class="icon-bar"></span>';
 	echo '</button>';
 
-	echo '<div class="navbar-header">';
+    echo '<div class="navbar-header">';
 	echo '<a href="' . $t_short_path . $t_logo_url . '" class="navbar-brand">';
-	echo '<span class="smaller-75"> ';
-	echo string_display_line( config_get('window_title') );
-	echo ' </span>';
+	#echo '<span class="smaller-75"> ';
+	#echo '<i class="ace-icon fa fa-diamond"></i> '. string_display_line( config_get('window_title') );
+	echo '<img src="images/header2.png" height="32" style="margin:7px"></img>';
+	#echo ' </span>';
 	echo '</a>';
 
 	$t_toggle_class = (OFF == config_get('show_avatar') ? 'navbar-toggle' : 'navbar-toggle-img');
@@ -646,7 +649,7 @@ function layout_navbar_subproject_option_list( $p_parent_id, $p_project_id = nul
 		echo ' class="project-link"> ' . str_repeat( '&#160;', count( $p_parents ) * 4 );
 		echo string_attribute( project_get_field( $t_id, 'name' ) ) . '</a></li>' . "\n";
 
-		layout_navbar_subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_parents );
+		layout_navbar_subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_can_report_only, $p_parents );
 	}
 }
 
@@ -907,7 +910,7 @@ function layout_sidebar_begin() {
 	$t_collapse_block = is_collapsed( 'sidebar' );
 	$t_block_css = $t_collapse_block ? 'menu-min' : '';
 
-	echo '<div id="sidebar" class="sidebar sidebar-fixed responsive compact ' . $t_block_css . '">';
+	echo '<div id="sidebar" class="sidebar sidebar-fixed responsive compact sidebar-scroll-native ' . $t_block_css . '">';
 
 	echo '<ul class="nav nav-list">';
 }
@@ -923,7 +926,10 @@ function layout_sidebar_begin() {
  */
 function layout_sidebar_menu( $p_page, $p_title, $p_icon, $p_active_sidebar_page = null ) {
 	if( $p_page == $p_active_sidebar_page ||
-		$p_page == basename( $_SERVER['SCRIPT_NAME'] ) ) {
+		$p_page == basename( $_SERVER['SCRIPT_NAME'] ) ||
+		stripos(str_replace("%20", " ", $_SERVER['QUERY_STRING']), "title=".$p_title) != FALSE ||
+		(strpos($_SERVER['QUERY_STRING'], 'Source/index') != FALSE && ( $p_title == 'Repositories' || $p_title == 'Search' ) ) ||
+		(strpos($_SERVER['QUERY_STRING'], 'Taskodrome/main') != FALSE && $p_title == 'Scrum Board' ) ) {
 		echo '<li class="active">' . "\n";
 	} else {
 		echo '<li>' . "\n";
@@ -936,8 +942,28 @@ function layout_sidebar_menu( $p_page, $p_title, $p_icon, $p_active_sidebar_page
 		$t_url = helper_mantis_url( $p_page );
 	}
 
-	echo '<a href="' . $t_url . '">' . "\n";
-	echo '<i class="menu-icon fa ' . $p_icon . '"></i> ' . "\n";
+	$t_fa_class = 'fa';
+	$t_fa_idx = strpos($p_icon, ' ');
+	if ($t_fa_idx != FALSE) {
+		$t_fa_class = substr($p_icon, 0, $t_fa_idx);
+		$p_icon = substr($p_icon, $t_fa_idx + 1);
+	}
+
+	echo '<a href="' . $t_url . '"';
+
+	#
+	# SPM
+	#
+	if( (stripos( $p_page, 'https:' ) === 0 || stripos( $p_page, 'http:' ) === 0) &&
+	     strstr($t_url, "wiki.php") == FALSE && strstr($t_url, "IFramed") == FALSE && config_get( 'html_make_links' ) == LINKS_NEW_WINDOW ) {
+		echo ' target="_blank"';
+	}
+	#
+	# SPM End
+	#
+
+	echo '>' . "\n";
+	echo '<i class="menu-icon ' . $t_fa_class . ' ' . $p_icon . '"></i> ' . "\n";
 	echo '<span class="menu-text"> ' . lang_get_defaulted( $p_title ) . ' </span>' . "\n";
 	echo '</a>' . "\n";
 	echo '<b class="arrow"></b>' . "\n";
@@ -1141,6 +1167,7 @@ function layout_footer() {
 	echo '<div class="col-md-6 col-xs-12 no-padding">' . "\n";
 	echo '<address>' . "\n";
 	echo '<strong>Powered by <a href="https://www.mantisbt.org" title="bug tracking software">MantisBT ' . $t_version_suffix . '</a></strong> <br>' . "\n";
+	echo "<small>Customized by Scott Meesseman</small>" . '<br>';
 	echo "<small>Copyright &copy;$t_copyright_years MantisBT Team</small>" . '<br>';
 
 	# Show optional user-specified custom copyright statement
@@ -1167,7 +1194,7 @@ function layout_footer() {
 		$t_mantisbt_logo_url = helper_mantis_url( 'images/mantis_logo.png' );
 		echo '<a href="https://www.mantisbt.org" '.
 			'title="Mantis Bug Tracker: a free and open source web based bug tracking system.">' .
-			'<img src="' . $t_mantisbt_logo_url . '" width="102" height="35" ' .
+			'<img src="' . $t_mantisbt_logo_url . '" width="160" height="55" ' .
 			'alt="Powered by Mantis Bug Tracker: a free and open source web based bug tracking system." />' .
 			'</a>' . "\n";
 		echo '</div>' . "\n";

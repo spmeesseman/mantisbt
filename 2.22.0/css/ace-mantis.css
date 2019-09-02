@@ -557,7 +557,7 @@ input.typeahead.scrollable ~ .tt-menu {
 
     .sidebar.compact + .main-content {
         margin-right: auto !important;
-        margin-left: 125px !important;
+        margin-left: 155px !important;
     }
 
     .sidebar.menu-min + .main-content {
@@ -566,11 +566,11 @@ input.typeahead.scrollable ~ .tt-menu {
     }
 
     .sidebar.compact, .sidebar.compact.navbar-collapse {
-        width: 125px;
+        width: 155px;
     }
 
     .sidebar.compact ~ .footer .footer-inner {
-        left: 125px;
+        left: 155px;
     }
 
     .sidebar.menu-min ~ .footer .footer-inner {
@@ -579,7 +579,7 @@ input.typeahead.scrollable ~ .tt-menu {
 
     .rtl .sidebar.compact + .main-content {
         margin-left: auto !important;
-        margin-right: 125px !important;
+        margin-right: 155px !important;
     }
 
     .rtl .sidebar.menu-min + .main-content {
@@ -588,7 +588,7 @@ input.typeahead.scrollable ~ .tt-menu {
     }
 
     .rtl .sidebar.compact ~ .footer .footer-inner {
-        right: 125px !important;
+        right: 155px !important;
     }
 
     .rtl .sidebar.menu-min ~ .footer .footer-inner {
@@ -618,7 +618,7 @@ input.typeahead.scrollable ~ .tt-menu {
 
     .sidebar.compact + .main-content {
         margin-right: auto !important;
-        margin-left: 125px !important;
+        margin-left: 155px !important;
     }
 
     .sidebar.menu-min + .main-content {
@@ -627,11 +627,11 @@ input.typeahead.scrollable ~ .tt-menu {
     }
 
     .sidebar.compact, .sidebar.compact.navbar-collapse {
-        width: 125px;
+        width: 155px;
     }
 
     .sidebar.compact ~ .footer .footer-inner {
-        left: 125px;
+        left: 155px;
     }
 
     .sidebar.menu-min ~ .footer .footer-inner {
@@ -640,7 +640,7 @@ input.typeahead.scrollable ~ .tt-menu {
 
     .rtl .sidebar.compact + .main-content {
         margin-left: auto !important;
-        margin-right: 125px !important;
+        margin-right: 155px !important;
     }
 
     .rtl .sidebar.menu-min + .main-content {
@@ -649,7 +649,7 @@ input.typeahead.scrollable ~ .tt-menu {
     }
 
     .rtl .sidebar.compact ~ .footer .footer-inner {
-        right: 125px !important;
+        right: 155px !important;
     }
 
     .rtl .sidebar.menu-min ~ .footer .footer-inner {

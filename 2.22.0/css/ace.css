@@ -93,7 +93,7 @@ body {
 }
 .page-header h1 small {
     margin: 0 6px;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: normal;
     color: #8089A0;
 }
@@ -2264,14 +2264,14 @@ no_such_element:-o-prefocus,
     top: auto;
     float: none !important;
     z-index: 1027;
+    height: calc(100% - 46px);
 }
 .sidebar.sidebar-fixed:before {
-    height: 5000px;
-    top: auto;
-    bottom: auto;
+    top: 0;
+    bottom: 0;
 }
 .sidebar-scroll-native {
-    overflow-y: scroll !important;
+    overflow-y: auto !important;
     overflow-x: hidden;
 }
 body.mob-safari .sidebar.sidebar-fixed {
@@ -2471,18 +2471,16 @@ body.mob-safari .sidebar.sidebar-fixed {
         bottom: -1px;
     }
     .sidebar.compact .nav-list > li > a {
-        height: auto;
-        line-height: 16px;
-        padding: 2px 0 8px;
-        text-align: center;
+        height: 39px;
+        line-height: 37px;
+        padding: 0 16px 0 7px;
+        position: relative;
     }
     .sidebar.compact .nav-list > li > a > .menu-icon {
-        display: block;
         margin: 0;
-        vertical-align: inherit;
         line-height: 32px;
         height: 32px;
-        font-size: 20px;
+        font-size: 18px;
     }
     .sidebar.compact .nav-list > li > a > .arrow {
         display: none;

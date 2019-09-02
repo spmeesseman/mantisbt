@@ -1,0 +1,50 @@
+{
+    "name": "app1.development.pjats.com",
+        "host": "app1.development.pjats.com",
+        "username": "administrator",
+        "password": "97s4yr2$",
+        "remotePath": "/var/www/app1/mantisbt",
+        "protocol": "ftp",
+        "port": 21,
+    "fileNameEncoding": "utf8",
+    "autoUpload": false, 
+    "autoDelete": false,
+    "autoDownload": false,  
+    "ignore": [ 
+        ".git",
+        ".svn", 
+        "/.vscode",  
+        "node_modules", 
+        "dist",
+        "build",   
+        "script"
+    ],
+    "altServer": [
+    {
+        "name": "app1.spmeesseman.com",
+        "host": "app1.spmeesseman.com",
+        "username": "spmeesseman",
+        "password": "KKdrew19",
+        "remotePath": "/var/www/app1/mantisbt",
+        "protocol": "sftp",
+        "port": 22
+    },
+    {
+        "name": "app1.development.pjats.com",
+        "host": "app1.development.pjats.com",
+        "username": "administrator",
+        "password": "97s4yr2$",
+        "remotePath": "/var/www/app1/mantisbt",
+        "protocol": "ftp",
+        "port": 21
+    },
+    {
+        "name": "app2.perryjohnson01.com",
+        "host": "app2.perryjohnson01.com",
+        "username": "administrator",
+        "password": "97s4yr2$",
+        "remotePath": "/var/www/app2/mantisbt",
+        "protocol": "ftp",
+        "port": 21
+    }] 
+}

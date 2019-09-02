@@ -21,6 +21,8 @@ This is a fork of the v2.21.1 [MantisBT project](https://github.com/mantisbt/man
 |---|---|
 |Fix sidebar active page highlight|core/layout_api.php|
 |Add sidebar-scroll-native class to sidebar|core/layout_api.php|
+|Add customized by label|core/layout_api.php|
+|Increased mantis logo size to fill space|core/layout_api.php|
 |Increse default sidebar width|css/ace-mantis.css, css/ace.css|
 |Sidebar overflow-y changed to auto|css/ace-mantis.css, css/ace.css|
 |Dynamic width sidebar based on overflow|js/common.js|

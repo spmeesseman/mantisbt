@@ -189,7 +189,7 @@ class SourcePlugin extends MantisSourceBase {
 				'title' => $t_lang,
 				'url' => $t_page,
 				'access_level' => plugin_config_get( 'view_threshold' ),
-				'icon' => 'fa-search'
+				'icon' => 'fa-code-fork'
 			);
 
 			$t_menu_options[] = $t_menu_option;

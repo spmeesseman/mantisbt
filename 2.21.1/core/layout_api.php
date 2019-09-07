@@ -597,15 +597,15 @@ function layout_navbar_project_icon()
 		$t_project_name = project_get_name($t_current_project_id);
 		$t_img_file = "/var/www/app1/res/img/app/" . $t_project_name . ".png";
 		if (file_exists($t_img_file)) {
-			echo '<li class="hidden-sm hidden-xs"><div class="padding-right-8 padding-left-8">';
-				echo '<img style="padding-bottom:4px" src="' . layout_base_url() . '/res/img/app/' . $t_project_name . '.png" height="42"></img>';
-				echo '</div></li>';
+			echo '<li><div class="padding-right-8 padding-left-8" style="background-color:#555">';
+			echo '<img style="padding-bottom:4px" src="' . layout_base_url() . '/res/img/app/' . $t_project_name . '.png" height="42"></img>';
+			echo '</div></li>';
 		}
 		else {
 			$t_project_name = strtolower($t_project_name);
 			$t_img_file = "/var/www/app1/res/img/app/" . $t_project_name . ".png";
 			if (file_exists($t_img_file)) {
-				echo '<li class="hidden-sm hidden-xs"><div class="padding-right-8 padding-left-8">';
+				echo '<li><div class="padding-right-8 padding-left-8" style="background-color:#555">';
 				echo '<img style="padding-bottom:4px" src="' . layout_base_url() . '/res/img/app/' . $t_project_name . '.png" height="42"></img>';
 				echo '</div></li>';
 			}

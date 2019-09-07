@@ -594,7 +594,7 @@ function layout_navbar_project_icon()
 	$t_current_project_id = helper_get_current_project();
 	if( ALL_PROJECTS != $t_current_project_id) 
 	{
-		$t_project_name = project_get_name($t_current_project_id);
+		$t_project_name = str_replace(" ", "", project_get_name($t_current_project_id));
 		$t_img_file = "/var/www/app1/res/img/app/" . $t_project_name . ".png";
 		if (file_exists($t_img_file)) {
 			echo '<li><div class="padding-right-8 padding-left-8" style="background-color:#555">';

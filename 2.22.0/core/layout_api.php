@@ -437,6 +437,8 @@ function layout_navbar() {
 	if (auth_is_user_authenticated()) {
 		# shortcuts button bar
 		layout_navbar_button_bar();
+		# custom spm
+		layout_navbar_project_icon();
 		# projects dropdown menu
 		layout_navbar_projects_menu();
 		# user buttons such as messages, notifications and user menu
@@ -573,6 +575,42 @@ function layout_navbar_button_bar() {
 
 	echo '</div>';
 	echo '</li>';
+}
+
+function layout_base_url()
+{
+	return sprintf(
+	  "%s://%s",
+	  isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+	  $_SERVER['SERVER_NAME']
+	);
+}
+
+function layout_navbar_project_icon() 
+{
+	if( !auth_is_user_authenticated() ) {
+		return;
+	}
+	$t_current_project_id = helper_get_current_project();
+	if( ALL_PROJECTS != $t_current_project_id) 
+	{
+		$t_project_name = str_replace(" ", "", project_get_name($t_current_project_id));
+		$t_img_file = "/var/www/app1/res/img/app/" . $t_project_name . ".png";
+		if (file_exists($t_img_file)) {
+			echo '<li><div class="padding-right-8 padding-left-8" style="background-color:#555">';
+			echo '<img style="padding-bottom:4px" src="' . layout_base_url() . '/res/img/app/' . $t_project_name . '.png" height="42"></img>';
+			echo '</div></li>';
+		}
+		else {
+			$t_project_name = strtolower($t_project_name);
+			$t_img_file = "/var/www/app1/res/img/app/" . $t_project_name . ".png";
+			if (file_exists($t_img_file)) {
+				echo '<li><div class="padding-right-8 padding-left-8" style="background-color:#555">';
+				echo '<img style="padding-bottom:4px" src="' . layout_base_url() . '/res/img/app/' . $t_project_name . '.png" height="42"></img>';
+				echo '</div></li>';
+			}
+		}
+	}
 }
 
 /**
@@ -927,9 +965,10 @@ function layout_sidebar_begin() {
 function layout_sidebar_menu( $p_page, $p_title, $p_icon, $p_active_sidebar_page = null ) {
 	if( $p_page == $p_active_sidebar_page ||
 		$p_page == basename( $_SERVER['SCRIPT_NAME'] ) ||
-		stripos(str_replace("%20", " ", $_SERVER['QUERY_STRING']), "title=".$p_title) != FALSE ||
-		(strpos($_SERVER['QUERY_STRING'], 'Source/index') != FALSE && ( $p_title == 'Repositories' || $p_title == 'Search' ) ) ||
-		(strpos($_SERVER['QUERY_STRING'], 'Taskodrome/main') != FALSE && $p_title == 'Scrum Board' ) ) {
+		stripos( str_replace( "%20", " ", $_SERVER['QUERY_STRING'] ), "title=".$p_title) != FALSE ||
+		( strpos( $_SERVER['QUERY_STRING'], 'Source/index' ) != FALSE && $p_title == 'Repositories' ) ||
+		( strpos( $_SERVER['QUERY_STRING'], 'Source/search_page' ) != FALSE && $p_title == 'Search' ) ||
+		( strpos( $_SERVER['QUERY_STRING'], 'Taskodrome/main' ) != FALSE && $p_title == 'Scrum Board' ) ) {
 		echo '<li class="active">' . "\n";
 	} else {
 		echo '<li>' . "\n";

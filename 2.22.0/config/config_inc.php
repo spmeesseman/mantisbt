@@ -64,6 +64,8 @@ $g_crypto_master_salt     = '+7r8ayQ8zZj1RHSm+JxLc2KEhjqSo+Y3ImM1MfAtOmc=';
 #$g_status_colors['assigned']     = '#afbed5';
 #$g_status_colors['resolved']     = '#c1b9ae';
 
+$g_access_levels_enum_string = '10:viewer,25:reporter,40:updater,50:technician,55:developer,70:manager,90:administrator';
+
 #
 # SIGNUP
 #
@@ -113,7 +115,7 @@ $g_reauthentication_expiry = TOKEN_EXPIRY_AUTHENTICATED;
  * LDAP
  */
 $g_ldap_server = 'ldap://10.0.0.100:389/';
-$g_ldap_root_dn = 'OU=PJA,DC=perryjohnson01,DC=com';
+$g_ldap_root_dn = 'DC=perryjohnson01,DC=com';
 $g_ldap_organization = '';
 $g_ldap_protocol_version = 3;
 $g_ldap_network_timeout = 0;
@@ -199,7 +201,7 @@ $g_wiki_engine_url = 'https://app1.development.pjats.com/wiki/';
 #
 # This may need to be modified if a new plugin needs to adda header
 # Add frame-src policy here for IFramed
-$g_custom_headers = array("Content-Security-Policy: frame-src http://gist-it.appshot.com/ https://npm.development.pjats.com/ 'self'; img-src https://secure.gravatar.com/ 'self' 'self' data:; default-src 'self'; frame-ancestors 'self'; font-src https://kit-pro.fontawesome.com/ https://kit-free.fontawesome.com/ 'self'; style-src https://kit-pro.fontawesome.com/ 'self' 'unsafe-inline'; script-src https://kit.fontawesome.com/ https://cdnjs.cloudflare.com/ 'self' 'unsafe-inline'");
+$g_custom_headers = array("Content-Security-Policy: frame-src http://gist-it.appshot.com/ https://npm.development.pjats.com/ https://pjainc.pjvista.com/ 'self'; img-src https://secure.gravatar.com/ 'self' 'self' data:; default-src 'self'; frame-ancestors https://app2.perryjohnson01.com/ 'self'; font-src https://kit-pro.fontawesome.com/ https://kit-free.fontawesome.com/ 'self'; style-src https://kit-pro.fontawesome.com/ 'self' 'unsafe-inline'; script-src https://kit.fontawesome.com/ https://cdnjs.cloudflare.com/ 'self' 'unsafe-inline'");
 
 #
 # SCRIPTS
@@ -386,14 +388,16 @@ $g_plugin_ProjectPages_main_menu_options_back = array(
         'access_level' => UPDATER,
         'url'          => 'plugin.php?page=IFramed/main&title=Install%20Doc&url=https://app1.development.pjats.com/svn/web/filedetails.php%3Frepname=pja%26path=%2Fproject_name%2Ftrunk%2Fdoc%2Fproject_name%20Installation.pdf%26usemime=1',
         'icon'         => 'fa-book',
-        'project_id'   => array ( -1 )
+        'project_id'   => array ( -1 ),
+        'no_project_name' => array ( 'Data Center', 'ExtJs Packages', 'Grand Rapids', 'Southfield', 'Tech Support' )
     ),
     array(
         'title'        => 'Developer Doc',
         'access_level' => DEVELOPER,
         'url'          => 'plugin.php?page=IFramed/main&title=Developer%20Doc&url=https://app1.development.pjats.com/doc/developernotes.md',
         'icon'         => 'fa-book',
-        'project_id'   => array ( -2 )
+        'project_id'   => array ( -2 ),
+        'no_project_name' => array ( 'Data Center', 'ExtJs Packages', 'Grand Rapids', 'Southfield', 'Tech Support' )
     ),
     array(
         'title'        => 'ExtJsServer API',
@@ -403,11 +407,28 @@ $g_plugin_ProjectPages_main_menu_options_back = array(
         'project_id'   => array ( 1, 10 )
     ),
     array(
-        'title'        => 'History File',
-        'access_level' => REPORTER,
-        'url'          => 'plugin.php?page=IFramed/main&title=History.txt&url=https://app1.development.pjats.com/svn/web/filedetails.php%3Frepname=pja%26path=%2Fproject_name%2Ftrunk%2Fdoc%2Fhistory.txt%26usemime=1',
+        'title'        => 'Changelog File',
+        'access_level' => UPDATER,
+        'url'          => 'pagenotfound.php',
         'icon'         => 'fa-history',
-        'project_id'   => array ( -1 )
+        'project_name' => array ( 'Grand Rapids', 'Southfield' )
+    ),
+    array(
+        'title'        => 'Sharepoint Docs',
+        'access_level' => UPDATER,
+        //'url'          => 'plugin.php?page=IFramed/main&title=Sharepoint%20Docs&url=https://pjainc.pjvista.com/Shared%20Documents/Tech%20Support/Application%20Installation%20and%20Configuration/project_name',
+        'url'          => 'https://pjainc.pjvista.com/Shared%20Documents/Tech%20Support/Application%20Installation%20and%20Configuration/project_name',
+        'icon'         => 'fa-books',
+        'project_id'   => array ( -1 ),
+        'no_project_name' => array ( 'Data Center', 'ExtJs Packages', 'Grand Rapids', 'Southfield', 'Tech Support' )
+    ),
+    array(
+        'title'        => 'Sharepoint Docs',
+        'access_level' => UPDATER,
+        //'url'          => 'plugin.php?page=IFramed/main&title=Sharepoint%20Docs&url=https://pjainc.pjvista.com/Shared%20Documents/Tech%20Support/Office%20and%20Datacenter/project_name',
+        'url'          => 'https://pjainc.pjvista.com/Shared%20Documents/Tech%20Support/Office%20and%20Datacenter/project_name',
+        'icon'         => 'fa-books',
+        'project_name' => array ( 'Grand Rapids', 'Southfield' )
     ),
     array(
         'title'        => 'WebSVN',
@@ -415,14 +436,7 @@ $g_plugin_ProjectPages_main_menu_options_back = array(
         'url'          => 'plugin.php?page=IFramed/main&title=WebSVN&url=https://app1.development.pjats.com/svn/web/listing.php%3Frepname=pja%26path=%2Fproject_name%2Ftrunk%2F',
         'icon'         => 'fa-spider',
         'project_id'   => array ( -1 ),
-        'no_project_name' => array ( 'Bridge' )
-    ),
-    array(
-        'title'        => 'WebSVN',
-        'access_level' => DEVELOPER,
-        'url'          => 'plugin.php?page=IFramed/main&title=WebSVN&url=https://app1.development.pjats.com/svn/web/listing.php%3Frepname=pjr%26path=%2FPJBridge%2Ftrunk%2F',
-        'icon'         => 'fa-spider',
-        'project_name' => array ( 'Bridge' )
+        'no_project_name' => array ( 'Data Center', 'ExtJs Packages', 'Grand Rapids', 'Southfield', 'Tech Support' )
     ),
     array(
         'title'        => 'GitHub',

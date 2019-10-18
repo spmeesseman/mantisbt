@@ -5,11 +5,11 @@
 [![app-publisher](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-app--publisher-e10000.svg)](https://github.com/spmeesseman/app-publisher)
 [![authors](https://img.shields.io/badge/authors-scott%20meesseman-6F02B5.svg?logo=visual%20studio%20code)](https://github.com/spmeesseman)
 
-- [ProjectPages MantisBT Plugin](#projectpages-mantisbt-plugin)
-  - [Description](#description)
-  - [Changes](#changes)
-  - [DokuWiki Changed File List](#dokuwiki-changed-file-list)
-  - [Supporing Font Awesome Pro](#supporing-font-awesome-pro)
+- [ProjectPages MantisBT Plugin](#ProjectPages-MantisBT-Plugin)
+  - [Description](#Description)
+  - [Changes](#Changes)
+  - [DokuWiki Changed File List](#DokuWiki-Changed-File-List)
+  - [Supporing Font Awesome Pro](#Supporing-Font-Awesome-Pro)
 
 ## Description
 
@@ -35,6 +35,7 @@ This is a fork of the v2.21.1 [MantisBT project](https://github.com/mantisbt/man
 |Add jpgraph library (for GanttChart)|library/jpgraph/*|
 |Add #function_default_to_value to CUSTOM_FIELD_TYPE_STRING|core/cfdefs/cfdef_standard.php|
 |Add technician user type|core/constant_inc.php, strings_english.txt|
+|Add check for $g_relationships[$p_relationship_type]['#name']|core/relationship_api.php|
 
 ## DokuWiki Changed File List
 

@@ -524,6 +524,27 @@ class BugData {
 			$this->last_updated = db_now();
 		}
 
+		# if developer submits this, then default status to 'confirmed'
+		$t_current_user = auth_get_current_user_id();
+		$t_current_user_name = user_get_username($t_current_user);
+		$t_access_level = user_get_access_level($t_current_user);
+		$t_project = helper_get_current_project();
+		$t_project_name = project_get_name($t_project);
+
+		if ( $t_project_name != "Tech Support" && $t_project_name != "Oracle Monitors" && 
+			 $t_project_name != "General Tasks" && $t_project_name != "Data Center" && 
+			 $t_project_name != "Southfield" && $t_project_name != "Grand Rapids" && 
+			 $t_project_name != "Development (Troy)")
+		{
+			if ( $t_access_level == DEVELOPER || $t_current_user_name == 'smeesseman' ) {
+				$this->status = CONFIRMED;
+			}
+		}
+		
+		if ($t_project_name == "GEMS2" && $t_access_level != DEVELOPER && $t_current_user_name != 'smeesseman') {
+			$this->target_version = '';
+		}
+
 		# Insert text information
 		db_param_push();
 		$t_query = 'INSERT INTO {bug_text}

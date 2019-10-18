@@ -662,6 +662,12 @@ function relationship_get_name_for_api( $p_relationship_type ) {
 		}
 	}
 
+	# spm
+	if( !isset( $g_relationships[$p_relationship_type]['#name'] )) {
+		return 'none';
+	}
+	# end spm
+	
 	return $g_relationships[$p_relationship_type]['#name'];
 }
 

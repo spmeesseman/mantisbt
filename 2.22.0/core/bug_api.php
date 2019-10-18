@@ -524,6 +524,12 @@ class BugData {
 			$this->last_updated = db_now();
 		}
 
+		# if developer submits this, then default status to 'confirmed'
+		$t_current_user = auth_get_current_user_id();
+		if ( user_get_access_level($t_current_user) == DEVELOPER || $t_current_user == 'smeesseman') {
+			$this->status = CONFIRMED;
+		}
+
 		# Insert text information
 		db_param_push();
 		$t_query = 'INSERT INTO {bug_text}

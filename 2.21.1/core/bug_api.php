@@ -818,7 +818,7 @@ class BugData {
 		# allow bypass if user is sending mail separately
 		if( false == $p_bypass_mail ) {
 			# If handler changes, send out owner change email
-			if( $t_old_data->handler_id != $this->handler_id ) {
+			if( $t_old_data->handler_id != $this->handler_id && $t_old_data->status == $this->status ) {
 				email_owner_changed( $c_bug_id, $t_old_data->handler_id, $this->handler_id );
 				return true;
 			}

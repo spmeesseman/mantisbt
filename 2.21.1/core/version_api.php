@@ -337,6 +337,11 @@ function version_add( $p_project_id, $p_version, $p_released = VERSION_FUTURE, $
 
 	$t_version_id = db_insert_id( db_get_table( 'project_version' ) );
 
+	#
+	# SPM - Add to cache
+	#
+	#version_cache_row( $t_version_id );
+
 	event_signal( 'EVENT_MANAGE_VERSION_CREATE', array( $t_version_id ) );
 
 	return $t_version_id;
@@ -379,6 +384,20 @@ function version_update( VersionData $p_version_info ) {
 					obsolete=' . db_param() . '
 				  WHERE id=' . db_param();
 	db_query( $t_query, array( $c_version_name, $c_description, $c_released, $c_date_order, $c_obsolete, $c_version_id ) );
+
+	#
+	# SPM - Update cache
+	#
+	#$t_row = version_cache_row( $c_version_id );
+	#if ( $t_row !== false)
+	#{
+	#	$t_row['version'] = $c_version_name;
+	#	$t_row['description'] = $c_description;
+	#	$t_row['released'] = $c_released;
+	#	$t_row['obsolete'] = $c_obsolete;
+	#	$t_row['date_order'] = $c_date_order;
+	#	$t_row['project_id'] = $c_project_id;
+	#}
 
 	if( $c_version_name != $c_old_version_name ) {
 		$t_project_list = array( $c_project_id );
@@ -432,6 +451,8 @@ function version_update( VersionData $p_version_info ) {
  * @return void
  */
 function version_remove( $p_version_id, $p_new_version = '' ) {
+	global $g_cache_versions;
+
 	version_ensure_exists( $p_version_id );
 
 	event_signal( 'EVENT_MANAGE_VERSION_DELETE', array( $p_version_id, $p_new_version ) );
@@ -442,6 +463,13 @@ function version_remove( $p_version_id, $p_new_version = '' ) {
 	db_param_push();
 	$t_query = 'DELETE FROM {project_version} WHERE id=' . db_param();
 	db_query( $t_query, array( (int)$p_version_id ) );
+
+	#
+	# SPM - Update cache
+	#
+	#if( isset( $g_cache_versions[$p_version_id] ) ) {
+	#	unset( $g_cache_versions[$p_version_id] );
+	#}
 
 	$t_project_list = array( $t_project_id );
 	if( config_get( 'subprojects_inherit_versions', null, ALL_USERS, ALL_PROJECTS ) ) {

@@ -38,6 +38,7 @@ This is a fork of the v2.21.1 [MantisBT project](https://github.com/mantisbt/man
 |Add check for $g_relationships[$p_relationship_type]['#name']|core/relationship_api.php|
 |Send status change email instead of assigned to ~ 821|core/bug_api.php|
 |Add category to email subject ~ 1457|core/email_api.php|
+|Update version cache on add,update,remove ~ 343 and 391 and 470|core/version_api.php|
 
 ## DokuWiki Changed File List
 

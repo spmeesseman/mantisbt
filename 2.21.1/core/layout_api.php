@@ -929,7 +929,7 @@ function layout_sidebar_menu( $p_page, $p_title, $p_icon, $p_active_sidebar_page
 	}
 
 	# Handle relative / absolute urls
-	if ( stripos( $p_page, 'https:' ) === 0 || stripos( $p_page, 'http:' ) === 0 ) {
+	if ( stripos( $p_page, 'https:' ) === 0 || stripos( $p_page, 'http:' ) === 0 || stripos( $p_page, 'file:' ) === 0 ) {
 		$t_url = $p_page;
 	} else {
 		$t_url = helper_mantis_url( $p_page );
@@ -947,7 +947,7 @@ function layout_sidebar_menu( $p_page, $p_title, $p_icon, $p_active_sidebar_page
 	#
 	# SPM
 	#
-	if( (stripos( $p_page, 'https:' ) === 0 || stripos( $p_page, 'http:' ) === 0) &&
+	if( (stripos( $p_page, 'https:' ) === 0 || stripos( $p_page, 'http:' ) === 0 || stripos( $p_page, 'file:' ) === 0) &&
 	     strstr($t_url, "wiki.php") == FALSE && strstr($t_url, "IFramed") == FALSE && config_get( 'html_make_links' ) == LINKS_NEW_WINDOW ) {
 		echo ' target="_blank"';
 	}

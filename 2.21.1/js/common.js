@@ -65,31 +65,33 @@ $(document).ready( function() {
 	var sidebardiv = document.getElementById('sidebar');
 	var maindiv = document.getElementsByClassName('main-content')[0];
 	var footerdiv = document.getElementsByClassName('footer-inner')[0];
-	var isMin = sidebardiv.classList.contains('menu-min');
-
-	var hasVerticalScrollbar= sidebardiv.scrollHeight - sidebardiv.clientHeight;
-	if (hasVerticalScrollbar > 0) {
-		sidebardiv.style.width = !isMin ? '175px' : '63px';
-	}
-	else {
-		sidebardiv.style.width = !isMin ? '155px' : '43px';
-	}
-
-	maindiv.style.setProperty('margin-left', sidebardiv.style.width, 'important');
-	footerdiv.style.setProperty('left', sidebardiv.style.width, 'important');
-
-	window.addEventListener( 'resize', function( event ) {
-		var hasVerticalScrollbar = sidebardiv.scrollHeight - sidebardiv.clientHeight;
-		var isMin = sidebardiv.classList.contains('menu-min');
+	if (sidebardiv)
+	{
+		var isMin = sidebardiv ? sidebardiv.classList.contains('menu-min') : undefined;
+		var hasVerticalScrollbar= sidebardiv.scrollHeight - sidebardiv.clientHeight;
 		if (hasVerticalScrollbar > 0) {
 			sidebardiv.style.width = !isMin ? '175px' : '63px';
 		}
-		else{
+		else {
 			sidebardiv.style.width = !isMin ? '155px' : '43px';
 		}
+
 		maindiv.style.setProperty('margin-left', sidebardiv.style.width, 'important');
 		footerdiv.style.setProperty('left', sidebardiv.style.width, 'important');
-	}, false );
+	
+		window.addEventListener( 'resize', function( event ) {
+			var hasVerticalScrollbar = sidebardiv.scrollHeight - sidebardiv.clientHeight;
+			var isMin = sidebardiv.classList.contains('menu-min');
+			if (hasVerticalScrollbar > 0) {
+				sidebardiv.style.width = !isMin ? '175px' : '63px';
+			}
+			else{
+				sidebardiv.style.width = !isMin ? '155px' : '43px';
+			}
+			maindiv.style.setProperty('margin-left', sidebardiv.style.width, 'important');
+			footerdiv.style.setProperty('left', sidebardiv.style.width, 'important');
+		}, false );
+	}
 
 	/**
 	 * Events to manage focus when displaying the dropdown.
